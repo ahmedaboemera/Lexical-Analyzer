@@ -1,0 +1,36 @@
+/*
+ * Graph.h
+ *
+ *  Created on: Mar 7, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_GRAPH_H_
+#define SRC_GRAPH_H_
+
+#include "Node.h"
+#include <vector>
+
+using namespace std;
+
+class Graph {
+public:
+	Graph();
+	void setRoot(Node* root);
+	void inc_count();
+	void dec_count();
+	void add_node(Node* new_node);
+	void connect_nodes(Node* src,
+			Node* dest, string input); // nodes must be exist in the graph
+	vector<Node*> get_nodes();
+	~Graph();
+private:
+	// might be changed to multiple roots since
+	// NFA might have multiple starting points
+	Node* root;
+	unsigned int count;
+	vector<Node*> graph_nodes;
+	map<>
+};
+
+#endif /* SRC_GRAPH_H_ */

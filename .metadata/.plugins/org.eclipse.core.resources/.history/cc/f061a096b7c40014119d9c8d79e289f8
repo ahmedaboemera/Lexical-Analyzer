@@ -1,0 +1,17 @@
+/*
+ * Graph.h
+ *
+ *  Created on: Mar 7, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_GRAPH_H_
+#define SRC_GRAPH_H_
+
+class Graph {
+public:
+	Graph();
+	~Graph();
+};
+
+#endif /* SRC_GRAPH_H_ */
