@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Node.h"
+#include "Graph.h"
 
 using namespace std;
 
@@ -20,8 +20,20 @@ Node create_nodes() {
 }
 
 int main() {
-	Node n = create_nodes();
 	cout << "hello world" << endl;
 	cout << "trying the script out..." << endl;
+
+	Graph g;
+	Node* n0 = g.add_node();
+	Node* n1 = g.add_node();
+	Node* n2 = g.add_node();
+
+	g.connect_nodes(n0, n1, "a");
+	g.connect_nodes(n0, n0, "a");
+	g.connect_nodes(n0, n2, "b");
+	g.connect_nodes(n1, n0, "b");
+	g.connect_nodes(n1, n2, "b");
+
+	g.print_adj_matrix();
 }
 
