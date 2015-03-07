@@ -46,6 +46,9 @@ void Graph::update_adj_matrix() {
 Node* Graph::add_node() {
 	Node* new_node = new Node (to_string(this->count));
 	this->graph_nodes.push_back(new_node);
+	if (this->count == 0) { // first insertion
+		this->root = new_node;
+	}
 	cout << "node added" << endl;
 	this->count++;
 	update_adj_matrix();
