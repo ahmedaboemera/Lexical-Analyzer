@@ -22,6 +22,6 @@ Node create_nodes() {
 int main() {
 	Node n = create_nodes();
 	cout << "hello world" << endl;
-	cout << n.getLabel() /*<< " " << n.getNext("a")->getNext("b")->getLabel() */<< endl;
+	cout << "trying the script out..." << endl;
 }
 
