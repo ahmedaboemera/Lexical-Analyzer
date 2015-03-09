@@ -1,0 +1,56 @@
+/*
+ * Graph.cpp
+ *
+ *  Created on: Mar 7, 2015
+ *      Author: karim
+ */
+
+#include "Graph.h"
+
+
+Graph::Graph() {
+	this->count = 0;
+	this->root = nullptr;
+	this->graphs_nodes_iterator = this->graph_nodes.begin();
+}
+
+/**
+ *	user can only request a new node to be added to the graph
+ *	a new node is added with a label that corresponds to its count
+ *	in the graph, a pointer to this node is returned which can then
+ *	be used to create a connection between itself and any other node
+ *	in the graph
+ */
+Node* Graph::add_node() {
+	Node* new_node = new Node (to_string(this->count));
+	this->graph_nodes.insert(graphs_nodes_iterator, new_node);
+	this->count++;
+	return new_node;
+}
+
+void Graph::connect_nodes(Node* src, Node* dest, string input) {
+		// if the graph already contains the src and dest nodes
+		if ((this->get_nodes().begin(), this->get_nodes().end(), src)
+				!= this->get_nodes().end() &&
+			(this->get_nodes().begin(), this->get_nodes().end(), dest)
+				!= this->get_nodes().end()) {
+			src->addNext(input, dest);
+			// add to adj matrix
+		}
+		/**
+		 * since all the nodes in the graph have integer labels which are
+		 * monotonically increasing, validating that a node exists in the
+		 * graph is equivalent to simply checking if the node's label is
+		 * less than the size of the graph
+		 */
+		if (this->get_nodes().size() > stoi(src->getLabel(), nullptr, 10) &&
+				this->get_nodes().size() > stoi(dest->getLabel(), nullptr, 10)) {
+			src->addNext(input, dest);
+		}
+
+}
+
+Graph::~Graph() {
+	// TODO Auto-generated destructor stub
+}
+

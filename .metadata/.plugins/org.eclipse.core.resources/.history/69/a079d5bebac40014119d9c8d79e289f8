@@ -1,0 +1,29 @@
+/*
+ * Graph.cpp
+ *
+ *  Created on: Mar 7, 2015
+ *      Author: karim
+ */
+
+#include "Graph.h"
+#include <string>
+
+using namespace std;
+
+Graph::Graph() {
+	this->count = 0;
+	this->root = nullptr;
+}
+
+void Graph::add_node(Node* new_node) {
+	if (this->count == 0) {
+		// first insertion in graph
+		string s = to_string(this->count);
+		Node* new_node = new Node ();
+	}
+}
+
+Graph::~Graph() {
+	// TODO Auto-generated destructor stub
+}
+

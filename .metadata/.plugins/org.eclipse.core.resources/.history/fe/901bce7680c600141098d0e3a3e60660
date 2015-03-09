@@ -1,0 +1,17 @@
+/*
+ * Acceptor.h
+ *
+ *  Created on: Mar 9, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_ACCEPTOR_H_
+#define SRC_ACCEPTOR_H_
+
+class Acceptor {
+public:
+	Acceptor();
+	~Acceptor();
+};
+
+#endif /* SRC_ACCEPTOR_H_ */
