@@ -1,0 +1,33 @@
+/*
+ * NFA.h
+ *
+ *  Created on: Mar 9, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_NFA_H_
+#define SRC_NFA_H_
+
+#include <string>
+#include <set>
+#include <map>
+
+using namespace std;
+
+class NFA {
+public:
+	NFA();
+	const unsigned char ACCEPTOR;
+	const unsigned char STARTING;
+	const unsigned char NEITHER;
+	void add_node(unsigned char flag);
+	void connect(int node1, int node2, string input);
+	void print_adj_list();
+	~NFA();
+private():
+		set<string> starting_points;
+		set<Acceptor> acceptors;
+		map <string, map<string, set<string> > >;
+};
+
+#endif /* SRC_NFA_H_ */

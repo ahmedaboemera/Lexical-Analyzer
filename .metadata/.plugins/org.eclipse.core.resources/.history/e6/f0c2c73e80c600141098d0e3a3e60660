@@ -1,0 +1,17 @@
+/*
+ * NFA.h
+ *
+ *  Created on: Mar 9, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_NFA_H_
+#define SRC_NFA_H_
+
+class NFA {
+public:
+	NFA();
+	~NFA();
+};
+
+#endif /* SRC_NFA_H_ */
