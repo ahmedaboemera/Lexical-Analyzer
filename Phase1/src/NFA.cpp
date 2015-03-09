@@ -11,16 +11,25 @@ using namespace std;
 
 unsigned int NFA::label_counter = 0; // static variable initialized
 
-//NFA* NFA::_concatenate(NFA* g1, NFA* g2) {
-//	return nullptr;
-//}
-//
-//NFA* NFA::_union(NFA* g1, NFA* g2) {
-//	return nullptr;
-//}
-//NFA* NFA::_close(NFA* g1, NFA* g2) {
-//	return nullptr;
-//}
+/*
+ * those functions will only work correctly if the given NFAs have
+ * exactly one starting state and one accepting state
+ */
+NFA* NFA::_concatenate(NFA* g1, NFA* g2) {
+	NFA* cat_g = new NFA();
+	for (vector<int>::iterator it = this->starting_points.begin();
+			it != this->starting_points.end(); it++) {
+		cat_g->add_starting(); // ????????????
+	}
+	return nullptr;
+}
+
+NFA* NFA::_union(NFA* g1, NFA* g2) {
+	return nullptr;
+}
+NFA* NFA::_close(NFA* g1, NFA* g2) {
+	return nullptr;
+}
 
 void NFA::add_node() {
 	this->adj_list.insert(
@@ -45,8 +54,21 @@ void NFA::add_acceptor(string accepted_expression) {
 	label_counter++;
 }
 
-void connect(int node1, int node2, string input) {
-
+void NFA::connect(int node1, int node2, string input) {
+	map <string, vector<int>> connections = this->adj_list.at(node1);
+	// if connections with the same input already exist
+	if (connections.find(input) != connections.end()) {
+		// simply push the new node into the vector of nodes connected to
+		// node1 with the same string input
+		connections.at(input).push_back(node2);
+	}
+	// else, this is the first connection to be inserted that connects node1
+	// to node2 with the given string input
+	else {
+		vector<int> v;
+		v.push_back(node2);
+		connections.insert(pair<string, vector<int>>(input, v));
+	}
 }
 
 void NFA::print_debug() {
