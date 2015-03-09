@@ -9,80 +9,82 @@
 
 using namespace std;
 
-int NFA::label_counter = 0; // static variable initialized
+unsigned int NFA::label_counter = 0; // static variable initialized
 
-//static NFA* _concatenate(NFA* g1, NFA* g2) {
-//
+//NFA* NFA::_concatenate(NFA* g1, NFA* g2) {
+//	return nullptr;
 //}
 //
-//static NFA* _union(NFA* g1, NFA* g2) {
-//
+//NFA* NFA::_union(NFA* g1, NFA* g2) {
+//	return nullptr;
 //}
-//static NFA* _close(NFA* g1, NFA* g2) {
-//
+//NFA* NFA::_close(NFA* g1, NFA* g2) {
+//	return nullptr;
 //}
 
 void NFA::add_node() {
-	map<string, set<int>*> connections;
-	this->adj_list->insert(pair<int, map<string,
-			set<int>*>*>(this->label_counter, &connections));
-	this->label_counter++;
+	this->adj_list.insert(
+			pair<int, map<string, vector<int> > >(label_counter,
+					map<string, vector<int> >()));
+	label_counter++;
 }
 
 void NFA::add_starting() {
-	map<string, set<int>*> connections;
-	this->adj_list->insert(pair<int, map<string,
-			set<int>*>*>(this->label_counter, &connections));
-	this->starting_points->insert(this->label_counter);
-	this->label_counter++;
+	this->adj_list.insert(
+			pair<int, map<string, vector<int> > >(label_counter,
+					map<string, vector<int> >()));
+	this->starting_points.push_back(label_counter);
+	label_counter++;
 }
 
 void NFA::add_acceptor(string accepted_expression) {
-	map<string, set<int>*> connections;
-	this->adj_list->insert(pair<int, map<string,
-		set<int>*>*>(this->label_counter, &connections));
-	Acceptor* a = new Acceptor(this-label_counter, accepted_expression);
-	this->acceptors->insert(a);
-	this->label_counter++;
+	this->adj_list.insert(
+			pair<int, map<string, vector<int> > >(label_counter,
+					map<string, vector<int> >()));
+	this->acceptors.push_back(Acceptor(label_counter, accepted_expression));
+	label_counter++;
 }
+
 void connect(int node1, int node2, string input) {
 
 }
-void print_debug() {
+
+void NFA::print_debug() {
+
+	cout << "Starting : ";
+	for (vector<int>::iterator it = starting_points.begin();
+			it != starting_points.end(); it++) {
+		cout << *it << ", ";
+	}
+	cout << endl;
+
+	cout << "Accepting : ";
+	for (vector<Acceptor>::iterator it = acceptors.begin();
+			it != acceptors.end(); it++) {
+		cout << it->get_id() << ", ";
+	}
+	cout << endl;
+
+	for (map<int, map<string, vector<int>>> ::iterator it = adj_list.begin();
+	it != adj_list.end(); it++) {
+		cout << it->first << ":" << endl;
+		for (map<string, vector<int>>::iterator it2 = it->second.begin();
+		it2 != it->second.end(); it2++) {
+			cout << "\t" << it2 -> first << ":";
+			for (vector<int>::iterator it3 = it2->second.begin(); it3 != it2->second.end();
+			it3++) {
+				cout << *it3 << ", ";
+			}
+			cout << endl;
+		}
+	}
 
 }
 
 NFA::NFA() {
-	this->starting_points = new set<int>;
-	this->adj_list = new map<int, map<string, set<int>*>*>;
-	this->acceptors = new set<Acceptor>;
 }
 
 NFA::~NFA() {
-	for(set<int>::iterator it = this->starting_points->begin();
-			it != this->starting_points->end(); it++) {
-		delete it;
-	}
-	delete starting_points;
 
-	for (map<int, map<string, set<int>*>*>::iterator it1 = this->adj_list->begin();
-			it1 != this->adj_list->end(); it1++) {
-		for (map<string, set<int>*>::iterator it2 = it1->second->begin();
-				it2 != it1->second->end(); it2++) {
-			for (set<int>::iterator it3 = it2->second->begin();
-					it3 != it2->second->end(); it3++) {
-				delete it3;
-			}
-			delete it2;
-		}
-		delete it1;
-	}
-	delete adj_list;
-
-	for(set<Acceptor>::iterator it = this->acceptors->begin();
-			it != this->acceptors->end(); it++) {
-		delete it;
-	}
-	delete acceptors;
 }
 
