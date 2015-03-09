@@ -35,20 +35,21 @@ private:
 };
 
 class NFA {
+
 public:
 	NFA();
 	static NFA* _concatenate(NFA* g1, NFA* g2);
 	static NFA* _union(NFA* g1, NFA* g2);
 	static NFA* _close(NFA* g1, NFA* g2);
-	void add_node(); // adds a regular node in the graph
-	void add_starting(); // adds a starting node to the graph
-	void add_acceptor(string accepted_expression);
+	int add_node(); // adds a regular node in the graph
+	int add_starting(); // adds a starting node to the graph
+	int add_acceptor(string accepted_expression);
 	void connect(int node1, int node2, string input);
 	void print_debug();
 	~NFA();
-	static unsigned int label_counter;
 
 private:
+	static unsigned int label_counter;
 	vector<int> starting_points;
 	vector<Acceptor> acceptors;
 	map<int, map<string, vector<int>>> adj_list;
