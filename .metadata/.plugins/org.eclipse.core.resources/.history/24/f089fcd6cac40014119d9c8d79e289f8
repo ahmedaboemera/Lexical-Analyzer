@@ -1,0 +1,91 @@
+/*
+ * Graph.cpp
+ *
+ *  Created on: Mar 7, 2015
+ *      Author: karim
+ */
+
+#include "Graph.h"
+
+using namespace std;
+
+Graph::Graph() {
+	this->count = 0;
+	this->root = nullptr;
+}
+
+/**
+ * adds a new entry to the adjacency matrix with the current count
+ */
+void Graph::update_adj_matrix() {
+	// 1) add a new boolean vector which corresponds to the current count
+	this->adj_matrix.push_back(new vector<bool>);
+	// 2) initialize the new vector with all false values (since it's isolated)
+	for (int i = 0; i < this->count+1; i++)
+		this-->adj_matrix.at(this->count+1)->push_back(false);
+	// 3) for each of the previous nodes in the adjacency matrix, add a false
+	for (int i = 0; i < this->count; i++)
+		this->adj_matrix.at(i)->push_back(false);
+}
+
+/**
+ *	user can only request a new node to be added to the graph
+ *	a new node is added with a label that corresponds to its count
+ *	in the graph, a pointer to this node is returned which can then
+ *	be used to create a connection between itself and any other node
+ *	in the graph
+ */
+Node* Graph::add_node() {
+	Node* new_node = new Node (to_string(this->count));
+	this->graph_nodes.push_back(new_node);
+	update_adj_matrix();
+	this->count++;
+
+//	// add a new entry in the adj_matrix
+//	this->adj_matrix.insert(adj_matrix_iterator, new vector<bool>);
+//	// initialize it with false values (i.e. new node is isolated)
+//	vector<bool> node_iter = this->adj_matrix.at(this->count-1)->begin();
+//	for (int i = 0; i < this->count; i++) {
+//		this->adj_matrix.at(this->count-1)->insert(node_iter, false);
+//	}
+
+	return new_node;
+}
+
+void Graph::connect_nodes(Node* src, Node* dest, string input) {
+//		// if the graph already contains the src and dest nodes
+//		if ((this->get_nodes().begin(), this->get_nodes().end(), src)
+//				!= this->get_nodes().end() &&
+//			(this->get_nodes().begin(), this->get_nodes().end(), dest)
+//				!= this->get_nodes().end()) {
+//			src->addNext(input, dest);
+//			// add to adj matrix
+//		}
+		/**
+		 * since all the nodes in the graph have integer labels which are
+		 * monotonically increasing, validating that a node exists in the
+		 * graph is equivalent to simply checking if the node's label is
+		 * less than the size of the graph
+		 */
+		if (this->get_nodes().size() > stoi(src->getLabel(), nullptr, 10) &&
+				this->get_nodes().size() > stoi(dest->getLabel(), nullptr, 10)) {
+			src->addNext(input, dest);
+			// add in adj matrix
+		}
+
+}
+
+void Graph::print_adj_matrix() {
+	for (int i = 0; i <= this->count; i++) {
+		cout << i << ":";
+		for (int j = 0; j <= this->count; j++) {
+			cout << " " << this->adj_matrix.at(i)->at(j);
+		}
+		cout << endl;
+	}
+}
+
+Graph::~Graph() {
+	// TODO Auto-generated destructor stub
+}
+
