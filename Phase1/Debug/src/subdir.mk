@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/Draft_NFA_Builder.cpp \
 ../src/Graph.cpp \
 ../src/NFA.cpp \
 ../src/Node.cpp \
@@ -11,6 +12,7 @@ CPP_SRCS += \
 ../src/main.cpp 
 
 OBJS += \
+./src/Draft_NFA_Builder.o \
 ./src/Graph.o \
 ./src/NFA.o \
 ./src/Node.o \
@@ -18,6 +20,7 @@ OBJS += \
 ./src/main.o 
 
 CPP_DEPS += \
+./src/Draft_NFA_Builder.d \
 ./src/Graph.d \
 ./src/NFA.d \
 ./src/Node.d \

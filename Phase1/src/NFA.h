@@ -1,10 +1,3 @@
-/*
- * NFA.h
- *
- *  Created on: Mar 9, 2015
- *      Author: karim
- */
-
 #ifndef SRC_NFA_H_
 #define SRC_NFA_H_
 
@@ -12,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <map>
+
+#define EPS ""
 
 using namespace std;
 
@@ -21,10 +16,10 @@ public:
 		this->id = id;
 		this->accepted_expr = accepted_expression;
 	}
-	int get_id() {
+	int get_id() const {
 		return this->id;
 	}
-	string get_accepted_expression() {
+	string get_accepted_expression() const {
 		return this->accepted_expr;
 	}
 	~Acceptor() {
@@ -38,12 +33,12 @@ class NFA {
 
 public:
 	NFA();
-	static NFA* _concatenate(NFA* g1, NFA* g2);
-	static NFA* _union(NFA* g1, NFA* g2);
-	static NFA* _close(NFA* g1, NFA* g2);
+	static NFA* _concatenate(const vector<NFA*>& gs);
+	static NFA* _union(const vector<NFA*>& gs);
+	static NFA* _close(const NFA& g);
 	int add_node(); // adds a regular node in the graph
 	int add_starting(); // adds a starting node to the graph
-	int add_acceptor(string accepted_expression);
+	int add_acceptor(string accepted_expression = "NONE");
 	void connect(int node1, int node2, string input);
 	void print_debug();
 	~NFA();

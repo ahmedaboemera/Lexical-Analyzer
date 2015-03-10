@@ -1,10 +1,3 @@
-/*
- * NFA.cpp
- *
- *  Created on: Mar 9, 2015
- *      Author: karim
- */
-
 #include "NFA.h"
 
 using namespace std;
@@ -15,15 +8,88 @@ unsigned int NFA::label_counter = 0; // static variable initialized
  * those functions will only work correctly if the given NFAs have
  * exactly one starting state and one accepting state
  */
-NFA* NFA::_concatenate(NFA* g1, NFA* g2) {
-	return nullptr;
+NFA* NFA::_concatenate(const vector<NFA*>& gs) {
+
+	NFA* catNFA = new NFA();
+
+	catNFA->starting_points.insert(catNFA->starting_points.begin(),
+			gs.front()->starting_points.begin(),
+			gs.front()->starting_points.end());
+
+	catNFA->acceptors.insert(catNFA->acceptors.begin(),
+			gs.back()->acceptors.begin(), gs.back()->acceptors.end());
+
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
+		NFA* cur = *it;
+		catNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
+	}
+
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end() - 1; it++) {
+		NFA* frst = *it;
+		NFA* scnd = *(it + 1);
+
+		for (vector<Acceptor>::const_iterator it2 = frst->acceptors.begin();
+				it2 != frst->acceptors.end(); it2++) {
+			for (vector<int>::const_iterator it3 =
+					scnd->starting_points.begin();
+					it3 != scnd->starting_points.end(); it3++) {
+				catNFA->connect(it2->get_id(), *it3, EPS);
+			}
+		}
+	}
+	return catNFA;
 }
 
-NFA* NFA::_union(NFA* g1, NFA* g2) {
-	return nullptr;
+NFA* NFA::_union(const vector<NFA*>& gs) {
+	NFA* unionNFA = new NFA();
+	int unionSt = unionNFA->add_starting();
+	int unionAcc = unionNFA->add_acceptor();
+
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
+		NFA* cur = *it;
+		unionNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
+
+		for (vector<int>::const_iterator it2 = cur->starting_points.begin();
+				it2 != cur->starting_points.end(); it2++) {
+			unionNFA->connect(unionSt, *it2, EPS);
+		}
+
+		for (vector<Acceptor>::const_iterator it2 = cur->acceptors.begin();
+				it2 != cur->acceptors.end(); it2++) {
+			unionNFA->connect(it2->get_id(), unionAcc, EPS);
+		}
+	}
+	return unionNFA;
 }
-NFA* NFA::_close(NFA* g1, NFA* g2) {
-	return nullptr;
+
+NFA* NFA::_close(const NFA& g) {
+	NFA* closeNFA = new NFA();
+
+	closeNFA->adj_list.insert(g.adj_list.begin(), g.adj_list.end());
+
+	int closeSt = closeNFA->add_starting();
+	int closeAcc = closeNFA->add_acceptor();
+
+	closeNFA->connect(closeSt, closeAcc, EPS);
+
+	for (vector<int>::const_iterator it = g.starting_points.begin();
+			it != g.starting_points.end(); it++) {
+		closeNFA->connect(closeSt, *it, EPS);
+	}
+
+	for (vector<Acceptor>::const_iterator it = g.acceptors.begin();
+			it != g.acceptors.end(); it++) {
+		closeNFA->connect(it->get_id(), closeAcc, EPS);
+	}
+
+	for (vector<Acceptor>::const_iterator it = g.acceptors.begin();
+			it != g.acceptors.end(); it++) {
+		for (vector<int>::const_iterator it2 = g.starting_points.begin();
+				it2 != g.starting_points.end(); it2++) {
+			closeNFA->connect(it->get_id(), *it2, EPS);
+		}
+	}
+	return closeNFA;
 }
 
 int NFA::add_node() {
@@ -68,7 +134,6 @@ void NFA::connect(int node1, int node2, string input) {
 		connections->insert(pair<string, vector<int>>(input, v));
 	}
 }
-
 
 void NFA::print_debug() {
 
