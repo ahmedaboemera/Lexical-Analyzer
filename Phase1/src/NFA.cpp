@@ -167,6 +167,10 @@ void NFA::print_debug() {
 
 }
 
+vector<int> NFA::next_states(int cur_state, string input) {
+	return adj_list.find(cur_state)->second.find(input)->second;
+}
+
 NFA::NFA() {
 }
 

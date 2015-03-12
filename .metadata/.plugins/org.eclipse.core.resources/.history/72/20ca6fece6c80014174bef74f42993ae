@@ -1,0 +1,17 @@
+/*
+ * DFA.h
+ *
+ *  Created on: Mar 12, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_DFA_H_
+#define SRC_DFA_H_
+
+class DFA {
+public:
+	DFA();
+	~DFA();
+};
+
+#endif /* SRC_DFA_H_ */

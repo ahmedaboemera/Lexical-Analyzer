@@ -41,6 +41,7 @@ public:
 	int add_acceptor(string accepted_expression = "NONE");
 	void connect(int node1, int node2, string input);
 	void print_debug();
+	vector<int> next_states(int cur_state, string input);
 	~NFA();
 
 private:

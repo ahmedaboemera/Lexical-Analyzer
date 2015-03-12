@@ -1,0 +1,13 @@
+#include <iostream>
+#include "NFA.h"
+
+using namespace std;
+
+int main() {
+	cout << "hello world" << endl;
+	cout << "trying the script out..." << endl;
+	NFA* n = foo();
+	cout << n->s;
+	delete n;
+}
+

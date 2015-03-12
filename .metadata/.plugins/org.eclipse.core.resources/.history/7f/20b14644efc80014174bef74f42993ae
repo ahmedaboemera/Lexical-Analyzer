@@ -1,0 +1,22 @@
+/*
+ * DFA.cpp
+ *
+ *  Created on: Mar 12, 2015
+ *      Author: karim
+ */
+
+#include "DFA.h"
+
+DFA::DFA(const NFA& nfa) {
+	// TODO Auto-generated constructor stub
+
+}
+
+vector<int> DFA::epsilon_closure(int node) {
+
+}
+
+DFA::~DFA() {
+	// TODO Auto-generated destructor stub
+}
+
