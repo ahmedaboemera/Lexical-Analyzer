@@ -26,34 +26,50 @@ using namespace std;
 //	return t;
 //}
 
-NFA foo() {
-	NFA t;
+NFA* foo() {
+	NFA g1, g2, g3;
 
-	int st = t.add_starting();
-	int x1 = t.add_node();
-	int x2 = t.add_node();
-	int x3 = t.add_node();
-	int x4 = t.add_node();
-	int acc = t.add_acceptor("a|b");
+	int x0 = g1.add_starting();
+	int x1 = g1.add_node();
+	int x2 = g1.add_node();
+	int x3 = g1.add_node();
+	int x4 = g1.add_node();
+	int x5 = g1.add_acceptor("a|b");
 
-	t.connect(st, x1, "");
-	t.connect(st, x2, "");
+	int x6 = g2.add_starting();
+	int x7 = g2.add_acceptor("a*b*");
 
-	t.connect(x1, x3, "a");
+	int x8 = g3.add_starting();
+	int x9 = g3.add_acceptor("ab");
+	int x10 = g3.add_acceptor("a");
 
-	t.connect(x2, x4, "b");
+	g1.connect(x0, x1, "");
+	g1.connect(x0, x2, "");
+	g1.connect(x1, x3, "a");
+	g1.connect(x2, x4, "b");
+	g1.connect(x3, x5, "");
+	g1.connect(x4, x5, "");
 
-	t.connect(x3, acc, "");
-	t.connect(x4, acc, "");
+	g2.connect(x6, x7, "b");
 
-	return t;
+	g3.connect(x8, x9, "a");
+	g3.connect(x8, x10, "b");
+
+	vector<NFA*> v;
+	v.push_back(&g1);
+	v.push_back(&g2);
+	v.push_back(&g3);
+
+	NFA* cat = NFA::_close(g1);
+
+	return cat;
 }
 
 int main() {
 
-	NFA t = foo();
+	NFA* t = foo();
 
-	t.print_debug();
+	t->print_debug();
 
 	return 0;
 }
