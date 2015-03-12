@@ -12,7 +12,7 @@ class Parser{
 		Parser();
 		void process_next_line();
 		~Parser();
-	private:
+	private :
 		stack<string>* postFix_generator(string line);
 		bool is_operator(char c);
 		int get_order(char c);

@@ -33,7 +33,7 @@ bool is_unary_operation(string s){
 }
 
 
-int* parse_string_to_NFA(string s){
+int* parse_operand_to_NFA(string s){
 	map<string, int*>::iterator it = nonterminal_NFA_map.find(s);
 	if(nonterminal_NFA_map.find(s) != nonterminal_NFA_map.end())
 		return nonterminal_NFA_map[s];
@@ -50,12 +50,11 @@ int* parse_string_to_NFA(string s){
 
 
 int* connect_NFA_with_operation(int* op1, int* op2, string operation){
+
 	if(operation.compare("|")){
 		return NFA._union(op1, op2);
 	}else if(operation.compare(".")){
 		return NFA._concatenate(op1, op2);
-	}else if(operation.compare("*")){
-		return _close(op1);
 	}else if(operation.compare("+")){
 		return _concat(_clone(op1), _close(op1));
 	}
@@ -86,10 +85,10 @@ int* generate_nonterminal_NFA(stack<string> s){
 				tmp.pop();
 			}
 
-			int* tmp_NFA = build_NFA(op1, op2, s.top());
+			int* tmp_NFA = connect_NFA_with_operation(op1, op2, s.top());
 			tmp.push(tmp_NFA);
 		}else{							// add operand on top of tmp stack
-			int* tmp_NFA = parse_string_to_NFA(s.top());	// push NFA
+			int* tmp_NFA = parse_operand_to_NFA(s.top());	// push NFA
 			tmp.push(tmp_NFA);
 		}
 
@@ -108,7 +107,7 @@ int* process_next_line(){
 	string lable = line.substr(i, j-i);
 	int* nfa;
 
-	stack<string> s = postfixGenerator(line.substr(j+1, line.length()));
+	stack<string> s = postFix_generator(line.substr(j+1, line.length()));
 
 	if(line.find(':')!= string::npos){	// defining nonterminal
 		nfa = generate_nonterminal_NFA(s);
