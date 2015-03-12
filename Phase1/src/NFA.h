@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
+#include <stack>
+#include <algorithm>
 
 #define EPS ""
 
@@ -38,10 +41,12 @@ public:
 	static NFA* _close(const NFA& g);
 	int add_node(); // adds a regular node in the graph
 	int add_starting(); // adds a starting node to the graph
+	vector<int> get_starting();
 	int add_acceptor(string accepted_expression = "NONE");
 	void connect(int node1, int node2, string input);
 	void print_debug();
-	vector<int> next_states(int cur_state, string input);
+	set<int> epsilon_closure(vector<int> node);
+	vector<int>* next_states(int cur_state, string input); //TODO: returning the vector pointer is dangerous.
 	~NFA();
 
 private:

@@ -18,8 +18,6 @@ public:
 	~DFA();
 private:
 	NFA nfa;
-	vector<int> epsilon_closure(int node);
-	vector<int> epsilon_closure(vector<int> node);
 	void subset_construct();
 };
 

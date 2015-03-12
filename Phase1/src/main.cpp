@@ -1,5 +1,6 @@
 #include <iostream>
 #include "NFA.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -60,16 +61,63 @@ NFA* foo() {
 	v.push_back(&g2);
 	v.push_back(&g3);
 
-	NFA* cat = NFA::_close(g1);
+	NFA* cat = NFA::_union(v);
 
 	return cat;
 }
 
+//set<int> set_difference(set<int> s1, set<int> s2) {
+//	set<int> difference;
+//	for (set<int>::iterator it = s1.begin(); it != s1.end(); it++) {
+//		for (set<int>::iterator it2 = s2.begin(); it2 != s2.end(); it2++) {
+//
+//		}
+//	}
+//}
+
 int main() {
 
-	NFA* t = foo();
+//	NFA* t = foo();
+////	t->print_debug();
+//
+//	vector<int> states;
+//	states.push_back(11);
+//	states.push_back(3);
+//	states.push_back(4);
+//	states.push_back(7);
+//	states.push_back(9);
+//	states.push_back(10);
+//
+//	set<int> eps = t->epsilon_closure(states);
+//
+//	cout << "===================================================" << endl;
+//
+//	for (set<int>::iterator it = eps.begin(); it != eps.end(); it++)
+//		cout << *it << endl;
+//
+//	cout << "size: " << eps.size() << endl;
 
-	t->print_debug();
+	set<int> s1;
+	s1.insert(3);
+	s1.insert(4);
+	s1.insert(1);
+	s1.insert(2);
+	s1.insert(0);
+
+	set<int> s2;
+
+	s2.insert(4);
+	s2.insert(10);
+	s2.insert(6);
+	s2.insert(2);
+	s2.insert(8);
+
+	set<int> result;
+	set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(),
+			inserter(result, result.end()));
+
+	for (set<int>::iterator it = result.begin(); it != result.end(); it++)
+		cout << *it << endl;
 
 	return 0;
 }
