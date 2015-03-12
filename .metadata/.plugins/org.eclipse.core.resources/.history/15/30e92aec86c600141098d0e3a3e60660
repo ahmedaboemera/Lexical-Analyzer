@@ -1,0 +1,43 @@
+/*
+ * NFA.cpp
+ *
+ *  Created on: Mar 9, 2015
+ *      Author: karim
+ */
+
+#include "NFA.h"
+
+//static NFA* _concatenate(NFA* g1, NFA* g2) {
+//
+//}
+//
+//static NFA* _union(NFA* g1, NFA* g2) {
+//
+//}
+//static NFA* _close(NFA* g1, NFA* g2) {
+//
+//}
+
+void add_node(unsigned char flag) {
+
+}
+void connect(int node1, int node2, string input) {
+
+}
+void print_adj_list() {
+
+}
+
+NFA::NFA() {
+	this->label_counter = 0; // initialized only once beacause it's static
+	this->starting_points = new set<int>;
+	this->adj_list = new map<int, map<string, set<string>*>*>;
+	this->acceptors = new set<Acceptor>;
+}
+
+NFA::~NFA() {
+	delete starting_points;
+	delete adj_list;
+	delete acceptors;
+}
+

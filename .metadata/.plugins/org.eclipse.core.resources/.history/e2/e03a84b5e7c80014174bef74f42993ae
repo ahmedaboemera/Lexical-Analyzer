@@ -1,0 +1,20 @@
+/*
+ * DFA.h
+ *
+ *  Created on: Mar 12, 2015
+ *      Author: karim
+ */
+
+#ifndef SRC_DFA_H_
+#define SRC_DFA_H_
+#define "NFA.h"
+
+class DFA {
+public:
+	DFA(NFA nfa);
+	vector<int> epsilon_closure(int node);
+	bool is_accepted(string expression);
+	~DFA();
+};
+
+#endif /* SRC_DFA_H_ */
