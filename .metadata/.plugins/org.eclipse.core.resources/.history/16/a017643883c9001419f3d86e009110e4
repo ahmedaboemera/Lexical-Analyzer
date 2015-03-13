@@ -1,0 +1,224 @@
+#include "NFA.h"
+
+using namespace std;
+
+unsigned int NFA::label_counter = 0; // static variable initialized
+
+/*
+ * those functions will only work correctly if the given NFAs have
+ * exactly one starting state and one accepting state
+ */
+NFA* NFA::_concatenate(const vector<NFA*>& gs) {
+
+	NFA* catNFA = new NFA();
+
+	catNFA->starting_points.insert(catNFA->starting_points.begin(),
+			gs.front()->starting_points.begin(),
+			gs.front()->starting_points.end());
+
+	catNFA->acceptors.insert(catNFA->acceptors.begin(),
+			gs.back()->acceptors.begin(), gs.back()->acceptors.end());
+
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
+		NFA* cur = *it;
+		catNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
+	}
+
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end() - 1;
+			it++) {
+		NFA* frst = *it;
+		NFA* scnd = *(it + 1);
+
+		for (vector<Acceptor>::const_iterator it2 = frst->acceptors.begin();
+				it2 != frst->acceptors.end(); it2++) {
+			for (vector<int>::const_iterator it3 =
+					scnd->starting_points.begin();
+					it3 != scnd->starting_points.end(); it3++) {
+				catNFA->connect(it2->get_id(), *it3, EPS);
+			}
+		}
+	}
+	return catNFA;
+}
+
+NFA* NFA::_union(const vector<NFA*>& gs) {
+	NFA* unionNFA = new NFA();
+	int unionSt = unionNFA->add_starting();
+	int unionAcc = unionNFA->add_acceptor();
+
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
+		NFA* cur = *it;
+		unionNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
+
+		for (vector<int>::const_iterator it2 = cur->starting_points.begin();
+				it2 != cur->starting_points.end(); it2++) {
+			unionNFA->connect(unionSt, *it2, EPS);
+		}
+
+		for (vector<Acceptor>::const_iterator it2 = cur->acceptors.begin();
+				it2 != cur->acceptors.end(); it2++) {
+			unionNFA->connect(it2->get_id(), unionAcc, EPS);
+		}
+	}
+	return unionNFA;
+}
+
+NFA* NFA::_close(const NFA& g) {
+	NFA* closeNFA = new NFA();
+
+	closeNFA->adj_list.insert(g.adj_list.begin(), g.adj_list.end());
+
+	int closeSt = closeNFA->add_starting();
+	int closeAcc = closeNFA->add_acceptor();
+
+	closeNFA->connect(closeSt, closeAcc, EPS);
+
+	for (vector<int>::const_iterator it = g.starting_points.begin();
+			it != g.starting_points.end(); it++) {
+		closeNFA->connect(closeSt, *it, EPS);
+	}
+
+	for (vector<Acceptor>::const_iterator it = g.acceptors.begin();
+			it != g.acceptors.end(); it++) {
+		closeNFA->connect(it->get_id(), closeAcc, EPS);
+	}
+
+	for (vector<Acceptor>::const_iterator it = g.acceptors.begin();
+			it != g.acceptors.end(); it++) {
+		for (vector<int>::const_iterator it2 = g.starting_points.begin();
+				it2 != g.starting_points.end(); it2++) {
+			closeNFA->connect(it->get_id(), *it2, EPS);
+		}
+	}
+	return closeNFA;
+}
+
+vector<int> NFA::get_starting(){
+	return starting_points;
+}
+
+set<int> NFA::epsilon_closure(vector<int> state) {
+	stack<int> stack;
+	set<int> epsClos;
+
+	// insert all given states in stack
+	for (vector<int>::iterator it = state.begin(); it != state.end(); it++)
+		stack.push(*it);
+
+	epsClos.insert(state.begin(), state.end());
+
+	while (!stack.empty()) {
+		int top = stack.top();
+		stack.pop();
+		vector<int>* epsilon_trans = next_states(top, EPS);
+		if (epsilon_trans == nullptr)
+			continue;
+		for (vector<int>::iterator it = epsilon_trans->begin();
+				it != epsilon_trans->end(); it++) {
+			if (epsClos.find(*it) == epsClos.end()) {
+				epsClos.insert(*it);
+				stack.push(*it);
+			}
+		}
+	}
+	return epsClos;
+}
+
+vector<int>* NFA::next_states(int cur_state, string input) {
+	map<int, map<string, vector<int>>> ::iterator it1 = adj_list.find(cur_state);
+	if (it1 != adj_list.end()) {
+		map<string, vector<int>>::iterator it2 = it1->second.find(input);
+		if (it2 != it1->second.end()) {
+			return &(it2->second);
+		}
+		return nullptr;
+	}
+	return nullptr;
+}
+
+map<string, vector<int>>> NFA::get_connections(int state) {
+
+}
+
+int NFA::add_node() {
+	this->adj_list.insert(
+			pair<int, map<string, vector<int> > >(label_counter,
+					map<string, vector<int> >()));
+	label_counter++;
+	return label_counter - 1;
+}
+
+int NFA::add_starting() {
+	this->adj_list.insert(
+			pair<int, map<string, vector<int> > >(label_counter,
+					map<string, vector<int> >()));
+	this->starting_points.push_back(label_counter);
+	label_counter++;
+	return label_counter - 1;
+}
+
+int NFA::add_acceptor(string accepted_expression) {
+	this->adj_list.insert(
+			pair<int, map<string, vector<int> > >(label_counter,
+					map<string, vector<int> >()));
+	this->acceptors.push_back(Acceptor(label_counter, accepted_expression));
+	label_counter++;
+	return label_counter - 1;
+}
+
+void NFA::connect(int node1, int node2, string input) {
+	map<string, vector<int>>* connections = &this->adj_list.at(node1);
+	// if connections with the same input already exist
+	if (connections->find(input) != connections->end()) {
+		// simply push the new node into the vector of nodes connected to
+		// node1 with the same string input
+		connections->at(input).push_back(node2);
+	}
+	// else, this is the first connection to be inserted that connects node1
+	// to node2 with the given string input
+	else {
+		vector<int> v;
+		v.push_back(node2);
+		connections->insert(pair<string, vector<int>>(input, v));
+	}
+}
+
+void NFA::print_debug() {
+
+	cout << "Starting : ";
+	for (vector<int>::iterator it = starting_points.begin();
+			it != starting_points.end(); it++) {
+		cout << *it << ", ";
+	}
+	cout << endl;
+
+	cout << "Accepting : ";
+	for (vector<Acceptor>::iterator it = acceptors.begin();
+			it != acceptors.end(); it++) {
+		cout << it->get_id() << ", ";
+	}
+	cout << endl;
+
+	for (map<int, map<string, vector<int>>> ::iterator it = adj_list.begin();
+	it != adj_list.end(); it++) {
+		cout << it->first << ":" << endl;
+		for (map<string, vector<int>>::iterator it2 = it->second.begin();
+		it2 != it->second.end(); it2++) {
+			cout << "\t" << it2 -> first << ":";
+			for (vector<int>::iterator it3 = it2->second.begin(); it3 != it2->second.end();
+			it3++) {
+				cout << *it3 << ", ";
+			}
+			cout << endl;
+		}
+	}
+
+}
+
+NFA::NFA() {
+}
+
+NFA::~NFA() {
+
+}
+

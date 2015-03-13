@@ -1,0 +1,62 @@
+/*
+ * DFA.cpp
+ *
+ *  Created on: Mar 12, 2015
+ *      Author: karim
+ */
+
+#include "DFA.h"
+
+DFA::DFA(const NFA& nfa) {
+	this->nfa = nfa;
+}
+
+void DFA::subset_construct() {
+	set<int> d_states;
+	set<int> visited;
+
+	set<int> init_starts = nfa.epsilon_closure(nfa.get_starting());
+	d_states.insert(init_starts.begin(), init_starts.end());
+
+	set<int> difference;
+	// TODO: change the while true to a proper condition
+	while(1) {
+		set_difference(d_states.begin(), d_states.end(), visited.begin(),
+				visited.end(), inserter(difference, difference.end()));
+		if (difference.empty() == true) break;
+		int first_unmarked = *(difference.begin()); // take any arbitrary element of the set, for instance the first element
+		visited.insert(first_unmarked);
+
+		map<string, vector<int>>* connections = nfa.get_connections(first_unmarked);
+		for (map<string, vector<int>>::iterator it = connections->begin(); it != connections->end();
+				it++) {
+			string input = it->first;
+			vector<int>& next_states = it->second;
+			set<int> epsClos = nfa.epsilon_closure(next_states);
+
+			// ----------------------- where we stopped yesterday ----------------------- //
+
+			/*
+			 * if epsClos are not included in d_states
+			 * 		add epsClos to d_states, unmarked
+			 * add new states in DFAs adj_matrix
+			 */
+			if(!includes(epsClos.begin(), epsClos.end(),d_states.begin(), d_states.end())) { // if epsClos are not included in d_states
+				d_states.insert(epsClos.begin(), epsClos.end());
+			}
+			// add epsClos to the DFA's adj_matrix
+			map<string, int> in_map;
+			for (set<int>::iterator it = epsClos.begin(); it != epsClos.end(); it++) {
+				in_map.insert(pair<string, int>(input, *it));
+			}
+			adj_list.insert(pair<int, map<string, int>>(first_unmarked, in_map));
+		}
+		difference.clear();
+
+	}
+}
+
+DFA::~DFA() {
+	// TODO Auto-generated destructor stub
+}
+

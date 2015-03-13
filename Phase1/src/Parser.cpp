@@ -40,10 +40,19 @@ stack<string>* Parser::postFix_generator(string line) {
 
 	string to_push = "";
 	for (std::string::iterator it = line.begin(); it != line.end(); ++it) {
+		if ((*it) == '*') {
+			post_fix->push("*");
+			continue;
+		}
+		if ((*it) == '+') {
+			post_fix->push("+");
+			continue;
+		}
 		if (!is_operator(*it)) {
 			to_push = to_push + *it;
 		} else {
-			post_fix->push(to_push);
+			if(to_push.compare("") != 0)
+				post_fix->push(to_push);
 			to_push = "";
 			operators.push(*it);
 			if (operators.empty()) {
