@@ -32,8 +32,7 @@ private:
 	bool is_unary_operation(string s);
 	NFA* parse_operand_to_nfa(string s);
 	NFA* connect_operand_with_operation(NFA* op1, NFA* op2, string operation);
-	NFA* generate_terminal_nfa(stack <string>* s);
-	NFA* generate_nonterminal_nfa(stack <string>* s);
+	NFA* generate_NFA(stack <string>* s);
 };
 
 #endif /* SRC_NFABUILDER_H_ */
