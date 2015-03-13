@@ -46,13 +46,8 @@ NFA* NFA_Builder::process_next_line() {
 		s->pop();
 	}
 	if (line.find(':') != string::npos) {	// defining nonterminal
-<<<<<<< HEAD
-		nfa = generate_nonterminal_nfa(t);
-		return NULL;
-=======
 		nfa = generate_NFA(t);
-
->>>>>>> 82bc0c7fe4926c3aecf5d7736d9dd23e21cf74ed
+		return NULL;
 	} else {								// defining terminal
 		nfa = generate_NFA(t);
 	}
