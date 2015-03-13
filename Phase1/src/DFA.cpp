@@ -12,7 +12,7 @@ unsigned int DFA::label_counter = 0; // static variable initialized
 DFA::DFA(NFA& nfa) {
 	this->nfa = nfa;
 	starting = 0;
-	this->subset_construct(nfa);
+	this->subset_construct();
 }
 
 int DFA::exists(set<int> u) {
@@ -27,47 +27,58 @@ int DFA::exists(set<int> u) {
 
 set<int> DFA::move(set<int> nfa_states, string in) {
 	set<int> next;
-
-	for(set<int>::iterator it  = nfa_states.begin(); it != nfa_states.end(); it++){
-
+	for (set<int>::iterator it = nfa_states.begin(); it != nfa_states.end();
+			it++) {
+		set<int>* res = nfa.next_states(*it, in);
+		if (res != nullptr)
+			next.insert(res->begin(), res->end());
 	}
+	return next;
 }
 
-void DFA::subset_construct(NFA& nfa) {
+int DFA::get_first_unvisited_state(set<int> visited) {
+	for (map<int, set<int>>::iterator it = d_states.begin();
+			it != d_states.end(); it++) {
+		if (visited.find(it->first) == visited.end())
+			return it->first;
+	}
+	return -1;
+}
+
+void DFA::subset_construct() {
+	set<string> lang = nfa.get_lang();
+
 	set<int> inits = nfa.epsilon_closure(nfa.get_starting());
 	starting = add_node(inits);
-	set<string> lang = nfa.get_lang();
+
+	int current_state;
 	set<int> visited;
-	set<int> keys;
-	keys.insert(starting);
-	int current_state = starting;
 
-//	for(map<int, set<int>>::iterator it = it)
+	while (true) {
+		current_state = get_first_unvisited_state(visited);
 
-	set<int> c = d_states.at(current_state);
+		if (current_state == -1) {
+			break;
+		}
 
-	for (set<int>::iterator it = c.begin(); it != c.end(); it++) {
-		visited.insert(*it);
-		for (set<string>::iterator sim = lang.begin(); sim != lang.end();
-				sim++) {
-			set<int> u = nfa.epsilon_closure(
-					*(nfa.next_states(current_state, *sim)));
-			int nextNode = exists(u);
-			if (nextNode < 0) {
-				nextNode = add_node(u);
+		visited.insert(current_state);
+
+		for (set<string>::iterator it = lang.begin(); it != lang.end(); it++) {
+			if (it->compare(EPS) == 0) {
+				continue;
 			}
-			connect()
+
+			set<int> u = nfa.epsilon_closure(
+					move(d_states.at(current_state), *it));
+
+			int dfa_state_id = exists(u);
+
+			if (dfa_state_id == -1) {
+				dfa_state_id = add_node(u);
+			}
+			connect(current_state, dfa_state_id, *it);
 		}
 	}
-
-	set<int> diff;
-	do {
-
-		diff.clear();
-		set_difference(keys.begin(), keys.end(), visited.begin(), visited.end(),
-				inserter(diff, diff.end()));
-	} while (!diff.empty());
-
 }
 
 void DFA::connect(int node1, int node2, string input) {
@@ -81,10 +92,6 @@ int DFA::add_node(set<int> nfa_states) {
 			pair<int, map<string, int>>(label_counter, map<string, int>()));
 	label_counter++;
 	return label_counter - 1;
-}
-
-int DFA::add_starting() {
-
 }
 
 void DFA::print_debug() {
@@ -102,7 +109,7 @@ void DFA::print_debug() {
 //		cout << it->get_id() << ", ";
 //	}
 //	cout << endl;
-
+	cout << "Starting: " << this->starting << endl;
 	for (map<int, map<string, int>>::iterator it = adj_list.begin();
 			it != adj_list.end(); it++) {
 		cout << it->first << ":" << endl;
@@ -115,6 +122,5 @@ void DFA::print_debug() {
 }
 
 DFA::~DFA() {
-	// TODO Auto-generated destructor stub
 }
 

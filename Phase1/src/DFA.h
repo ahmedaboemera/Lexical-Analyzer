@@ -28,9 +28,11 @@ private:
 	int starting;
 	map<int, set<int>> d_states;
 	map<int, map<string, int>> adj_list;
-	void subset_construct(NFA& nfa);
+	void subset_construct();
 	int exists(set<int> u);
+	int get_first_unvisited_state(set<int> visited);
 	set<int> move(set<int> nfa_states, string in);
+	vector<Acceptor> acceptors;
 };
 
 #endif /* SRC_DFA_H_ */

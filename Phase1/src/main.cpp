@@ -152,7 +152,6 @@ int main() {
 //	for (set<int>::iterator it = result.begin(); it != result.end(); it++)
 //		cout << *it << endl;
 
-
 	NFA* g = xyz();
 
 	DFA* d = new DFA(*g);
