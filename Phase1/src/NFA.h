@@ -47,6 +47,7 @@ public:
 	void print_debug();
 	set<int> epsilon_closure(vector<int> node);
 	vector<int>* next_states(int cur_state, string input); //TODO: returning the vector pointer is dangerous.
+	map<string, vector<int>>* get_connections(int state);
 	~NFA();
 
 private:

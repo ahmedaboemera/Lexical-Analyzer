@@ -12,7 +12,6 @@
 #include <fstream>
 #include <stack>
 #include <map>
-#include <Node.h>
 #include <NFA.h>
 #include <Parser.h>
 

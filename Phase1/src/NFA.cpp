@@ -136,6 +136,13 @@ vector<int>* NFA::next_states(int cur_state, string input) {
 	return nullptr;
 }
 
+map<string, vector<int>>* NFA::get_connections(int state) {
+	if (adj_list.find(state) != adj_list.end()) {
+		return &(adj_list.find(state)->second);
+	}
+	return nullptr;
+}
+
 int NFA::add_node() {
 	this->adj_list.insert(
 			pair<int, map<string, vector<int> > >(label_counter,

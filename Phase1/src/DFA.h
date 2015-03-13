@@ -15,9 +15,11 @@ public:
 	DFA(const NFA& nfa);
 	Acceptor accepts(string expression); // returns null if expression
 										 // is not accepted
+	void print_debug();
 	~DFA();
 private:
 	NFA nfa;
+	map<int, map<string, int>> adj_list;
 	void subset_construct();
 };
 
