@@ -6,21 +6,30 @@
 CPP_SRCS += \
 ../src/DFA.cpp \
 ../src/NFA.cpp \
+<<<<<<< HEAD
 ../src/NFABuilder.cpp \
+=======
+>>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
 ../src/Parser.cpp \
 ../src/main.cpp 
 
 OBJS += \
 ./src/DFA.o \
 ./src/NFA.o \
+<<<<<<< HEAD
 ./src/NFABuilder.o \
+=======
+>>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
 ./src/Parser.o \
 ./src/main.o 
 
 CPP_DEPS += \
 ./src/DFA.d \
 ./src/NFA.d \
+<<<<<<< HEAD
 ./src/NFABuilder.d \
+=======
+>>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
 ./src/Parser.d \
 ./src/main.d 
 

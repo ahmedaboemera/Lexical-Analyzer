@@ -24,7 +24,8 @@ NFA* NFA::_concatenate(const vector<NFA*>& gs) {
 		catNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
 	}
 
-	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end() - 1; it++) {
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end() - 1;
+			it++) {
 		NFA* frst = *it;
 		NFA* scnd = *(it + 1);
 
@@ -90,6 +91,49 @@ NFA* NFA::_close(const NFA& g) {
 		}
 	}
 	return closeNFA;
+}
+
+vector<int> NFA::get_starting(){
+	return starting_points;
+}
+
+set<int> NFA::epsilon_closure(vector<int> state) {
+	stack<int> stack;
+	set<int> epsClos;
+
+	// insert all given states in stack
+	for (vector<int>::iterator it = state.begin(); it != state.end(); it++)
+		stack.push(*it);
+
+	epsClos.insert(state.begin(), state.end());
+
+	while (!stack.empty()) {
+		int top = stack.top();
+		stack.pop();
+		vector<int>* epsilon_trans = next_states(top, EPS);
+		if (epsilon_trans == nullptr)
+			continue;
+		for (vector<int>::iterator it = epsilon_trans->begin();
+				it != epsilon_trans->end(); it++) {
+			if (epsClos.find(*it) == epsClos.end()) {
+				epsClos.insert(*it);
+				stack.push(*it);
+			}
+		}
+	}
+	return epsClos;
+}
+
+vector<int>* NFA::next_states(int cur_state, string input) {
+	map<int, map<string, vector<int>>> ::iterator it1 = adj_list.find(cur_state);
+	if (it1 != adj_list.end()) {
+		map<string, vector<int>>::iterator it2 = it1->second.find(input);
+		if (it2 != it1->second.end()) {
+			return &(it2->second);
+		}
+		return nullptr;
+	}
+	return nullptr;
 }
 
 int NFA::add_node() {
@@ -165,10 +209,6 @@ void NFA::print_debug() {
 		}
 	}
 
-}
-
-vector<int> NFA::next_states(int cur_state, string input) {
-	return adj_list.find(cur_state)->second.find(input)->second;
 }
 
 NFA::NFA() {
