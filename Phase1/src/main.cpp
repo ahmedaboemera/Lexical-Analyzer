@@ -1,5 +1,6 @@
 #include <iostream>
 #include "NFA.h"
+#include "DFA.h"
 #include <algorithm>
 
 using namespace std;

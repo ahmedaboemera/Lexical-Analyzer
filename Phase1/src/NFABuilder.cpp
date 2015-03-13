@@ -45,15 +45,16 @@ NFA* NFA_Builder::process_next_line() {
 		t->push(s->top());
 		s->pop();
 	}
-//	while(!t->empty()){
-//		cout<<t->top();
-//		t->pop();
-//	}
 	if (line.find(':') != string::npos) {	// defining nonterminal
+<<<<<<< HEAD
 		nfa = generate_nonterminal_nfa(t);
 		return NULL;
+=======
+		nfa = generate_NFA(t);
+
+>>>>>>> 82bc0c7fe4926c3aecf5d7736d9dd23e21cf74ed
 	} else {								// defining terminal
-		nfa = generate_terminal_nfa(t);
+		nfa = generate_NFA(t);
 	}
 	return nfa;
 }
@@ -78,6 +79,31 @@ NFA* NFA_Builder::parse_operand_to_nfa(string s) {
 	if (nonterminal_NFA_map.find(s) != nonterminal_NFA_map.end())
 		return nonterminal_NFA_map[s];
 
+	bool range_flag = false;
+	int i = 0;
+	char start, end;
+	for (; i < s.length(); i++) {
+		if (s[i] == '-') {
+			range_flag = true;
+			start = s[i - 1];
+			end = s[i + 1];
+			break;
+		}
+	}
+	if (range_flag) {
+		vector<NFA*> range;
+		for (int i = start; i <= end; i++) {
+			char now = i;
+			string in="";
+			in += now;
+			NFA* nfa = new NFA();
+			nfa->connect(// connect NFA of the terminal in single edge:	S------>A
+					nfa->add_starting(), nfa->add_acceptor(in), in);
+			range.push_back(nfa);
+		}
+
+		return NFA::_union(range);
+	}
 	NFA* nfa = new NFA();
 	nfa->connect(	// connect NFA of the terminal in single edge:	S------>A
 			nfa->add_starting(), nfa->add_acceptor(s), s);
@@ -110,14 +136,9 @@ NFA* NFA_Builder::connect_operand_with_operation(NFA* op1, NFA* op2,
 	return new NFA();	// wrong operation
 }
 
-NFA* NFA_Builder::generate_terminal_nfa(stack<string>* s) {
-	// TODO
-}
-
-NFA* NFA_Builder::generate_nonterminal_nfa(stack<string>* s) {
+NFA* NFA_Builder::generate_NFA(stack<string>* s) {
 	stack<NFA*> tmp;
 	NFA *op1 = new NFA(), *op2 = new NFA();
-	NFA *complete_NFA = new NFA();
 	while (!s->empty()) {
 		if ((s->top()).compare("") == 0) {
 			s->pop();

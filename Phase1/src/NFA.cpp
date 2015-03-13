@@ -184,6 +184,7 @@ void NFA::connect(int node1, int node2, string input) {
 		v.push_back(node2);
 		connections->insert(pair<string, vector<int>>(input, v));
 	}
+	input_laguage.insert(input);
 }
 
 void NFA::print_debug() {
