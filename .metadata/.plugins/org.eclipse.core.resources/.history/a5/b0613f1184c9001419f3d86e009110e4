@@ -9,7 +9,6 @@
 
 DFA::DFA(const NFA& nfa) {
 	this->nfa = nfa;
-	this->subset_construct();
 }
 
 void DFA::subset_construct() {
@@ -55,33 +54,6 @@ void DFA::subset_construct() {
 		difference.clear();
 
 	}
-}
-
-void DFA::print_debug() {
-
-//	cout << "Starting : ";
-//	for (vector<int>::iterator it = starting_points.begin();
-//			it != starting_points.end(); it++) {
-//		cout << *it << ", ";
-//	}
-//	cout << endl;
-//
-//	cout << "Accepting : ";
-//	for (vector<Acceptor>::iterator it = acceptors.begin();
-//			it != acceptors.end(); it++) {
-//		cout << it->get_id() << ", ";
-//	}
-//	cout << endl;
-
-	for (map<int, map<string, int>>::iterator it = adj_list.begin();
-	it != adj_list.end(); it++) {
-		cout << it->first << ":" << endl;
-		for (map<string, int>::iterator it2 = it->second.begin();
-		it2 != it->second.end(); it2++) {
-			cout << "\t'" << it2->first << "':" << it2->second << endl;
-		}
-	}
-
 }
 
 DFA::~DFA() {

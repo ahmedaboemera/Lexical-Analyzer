@@ -9,7 +9,6 @@
 
 DFA::DFA(const NFA& nfa) {
 	this->nfa = nfa;
-	this->subset_construct();
 }
 
 void DFA::subset_construct() {

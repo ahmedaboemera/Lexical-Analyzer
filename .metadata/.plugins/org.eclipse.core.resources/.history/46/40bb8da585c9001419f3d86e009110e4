@@ -1,6 +1,5 @@
 #include <iostream>
 #include "NFA.h"
-#include "DFA.h"
 #include <algorithm>
 
 using namespace std;
@@ -156,8 +155,6 @@ int main() {
 	NFA* g = xyz();
 
 	DFA* d = new DFA(*g);
-
-	d->print_debug();
 
 	return 0;
 }

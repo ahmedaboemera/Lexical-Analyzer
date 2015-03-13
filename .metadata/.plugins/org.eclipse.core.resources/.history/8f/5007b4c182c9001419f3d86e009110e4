@@ -9,7 +9,6 @@
 
 DFA::DFA(const NFA& nfa) {
 	this->nfa = nfa;
-	this->subset_construct();
 }
 
 void DFA::subset_construct() {
@@ -28,10 +27,10 @@ void DFA::subset_construct() {
 		int first_unmarked = *(difference.begin()); // take any arbitrary element of the set, for instance the first element
 		visited.insert(first_unmarked);
 
-		map<string, vector<int>>* connections = nfa.get_connections(first_unmarked);
-		for (map<string, vector<int>>::iterator it = connections->begin(); it != connections->end();
+		map<string, vector<int>>& connections = nfa.adj_list.find(first_unmarked)->second;
+		for (map<string, vector<int>>::iterator it = connections.begin(); it != connections.end();
 				it++) {
-			string input = it->first;
+			string& input = it->first;
 			vector<int>& next_states = it->second;
 			set<int> epsClos = nfa.epsilon_closure(next_states);
 
@@ -55,33 +54,6 @@ void DFA::subset_construct() {
 		difference.clear();
 
 	}
-}
-
-void DFA::print_debug() {
-
-//	cout << "Starting : ";
-//	for (vector<int>::iterator it = starting_points.begin();
-//			it != starting_points.end(); it++) {
-//		cout << *it << ", ";
-//	}
-//	cout << endl;
-//
-//	cout << "Accepting : ";
-//	for (vector<Acceptor>::iterator it = acceptors.begin();
-//			it != acceptors.end(); it++) {
-//		cout << it->get_id() << ", ";
-//	}
-//	cout << endl;
-
-	for (map<int, map<string, int>>::iterator it = adj_list.begin();
-	it != adj_list.end(); it++) {
-		cout << it->first << ":" << endl;
-		for (map<string, int>::iterator it2 = it->second.begin();
-		it2 != it->second.end(); it2++) {
-			cout << "\t'" << it2->first << "':" << it2->second << endl;
-		}
-	}
-
 }
 
 DFA::~DFA() {

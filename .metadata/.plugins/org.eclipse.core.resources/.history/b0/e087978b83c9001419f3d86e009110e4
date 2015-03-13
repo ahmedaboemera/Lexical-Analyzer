@@ -138,7 +138,7 @@ vector<int>* NFA::next_states(int cur_state, string input) {
 
 map<string, vector<int>>* NFA::get_connections(int state) {
 	if (adj_list.find(state) != adj_list.end()) {
-		return &(adj_list.find(state)->second);
+		return adj_list.find(state)->second;
 	}
 	return nullptr;
 }
@@ -184,7 +184,6 @@ void NFA::connect(int node1, int node2, string input) {
 		v.push_back(node2);
 		connections->insert(pair<string, vector<int>>(input, v));
 	}
-	input_laguage.insert(input);
 }
 
 void NFA::print_debug() {

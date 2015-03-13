@@ -9,7 +9,6 @@
 
 DFA::DFA(const NFA& nfa) {
 	this->nfa = nfa;
-	this->subset_construct();
 }
 
 void DFA::subset_construct() {
@@ -78,7 +77,7 @@ void DFA::print_debug() {
 		cout << it->first << ":" << endl;
 		for (map<string, int>::iterator it2 = it->second.begin();
 		it2 != it->second.end(); it2++) {
-			cout << "\t'" << it2->first << "':" << it2->second << endl;
+			cout << "\t" << it2 -> first << ":" << it2->second << endl;
 		}
 	}
 
