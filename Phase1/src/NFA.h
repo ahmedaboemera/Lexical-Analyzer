@@ -43,6 +43,7 @@ public:
 	int add_starting(); // adds a starting node to the graph
 	int add_acceptor(string accepted_expression = "NONE");
 	vector<int> get_starting();
+	set<string> get_lang();
 	void connect(int node1, int node2, string input);
 	void print_debug();
 	set<int> epsilon_closure(vector<int> node);

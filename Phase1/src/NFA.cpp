@@ -93,7 +93,7 @@ NFA* NFA::_close(const NFA& g) {
 	return closeNFA;
 }
 
-vector<int> NFA::get_starting(){
+vector<int> NFA::get_starting() {
 	return starting_points;
 }
 
@@ -185,6 +185,10 @@ void NFA::connect(int node1, int node2, string input) {
 		connections->insert(pair<string, vector<int>>(input, v));
 	}
 	input_laguage.insert(input);
+}
+
+set<string> NFA::get_lang() {
+	return input_laguage;
 }
 
 void NFA::print_debug() {
