@@ -86,30 +86,33 @@ void DFA::connect(int node1, int node2, string input) {
 	connections->insert(pair<string, int>(input, node2));
 }
 
+map<string, int>* DFA::get_connections(int state) {
+	map<int, map<string, int>>::iterator map_it = adj_list.find(state);
+	if (map_it == adj_list.end())
+		return nullptr;
+	return &(map_it->second);
+}
+
 int DFA::add_node(set<int> nfa_states) {
+	set<int> nfa_acceptors;
+	set_intersection(nfa_states.begin(), nfa_states.end(), this->nfa.get_acceptors().begin(),
+			this->nfa.get_acceptors().end(), inserter(nfa_acceptors, nfa_acceptors.end()));
 	d_states.insert(pair<int, set<int>>(label_counter, nfa_states));
 	adj_list.insert(
 			pair<int, map<string, int>>(label_counter, map<string, int>()));
+	if (!nfa_acceptors.empty())
+		acceptors.insert(label_counter);
 	label_counter++;
 	return label_counter - 1;
 }
 
 void DFA::print_debug() {
 
-//	cout << "Starting : ";
-//	for (vector<int>::iterator it = starting_points.begin();
-//			it != starting_points.end(); it++) {
-//		cout << *it << ", ";
-//	}
-//	cout << endl;
-//
-//	cout << "Accepting : ";
-//	for (vector<Acceptor>::iterator it = acceptors.begin();
-//			it != acceptors.end(); it++) {
-//		cout << it->get_id() << ", ";
-//	}
-//	cout << endl;
 	cout << "Starting: " << this->starting << endl;
+	cout << "Accepting:";
+	for (set<int>::iterator it = acceptors.begin(); it != acceptors.end(); it++)
+		cout << " " << *it;
+	cout << endl;
 	for (map<int, map<string, int>>::iterator it = adj_list.begin();
 			it != adj_list.end(); it++) {
 		cout << it->first << ":" << endl;

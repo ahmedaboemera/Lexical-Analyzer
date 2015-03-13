@@ -93,7 +93,7 @@ NFA* NFA_Builder::parse_operand_to_nfa(string s) {
 			in += now;
 			NFA* nfa = new NFA();
 			nfa->connect(// connect NFA of the terminal in single edge:	S------>A
-					nfa->add_starting(), nfa->add_acceptor(in), in);
+					nfa->add_starting(), nfa->add_acceptor(/*in*/), in); // karim-- add_acceptor was changed to take void parameters
 			range.push_back(nfa);
 		}
 
@@ -101,7 +101,7 @@ NFA* NFA_Builder::parse_operand_to_nfa(string s) {
 	}
 	NFA* nfa = new NFA();
 	nfa->connect(	// connect NFA of the terminal in single edge:	S------>A
-			nfa->add_starting(), nfa->add_acceptor(s), s);
+			nfa->add_starting(), nfa->add_acceptor(/*s*/), s); // karim-- add_acceptor was changed to take void parameters
 
 	return nfa;
 }

@@ -68,14 +68,14 @@ NFA* foo() {
 	int x2 = g1.add_node();
 	int x3 = g1.add_node();
 	int x4 = g1.add_node();
-	int x5 = g1.add_acceptor("a|b");
+	int x5 = g1.add_acceptor();
 
 	int x6 = g2.add_starting();
-	int x7 = g2.add_acceptor("a*b*");
+	int x7 = g2.add_acceptor();
 
 	int x8 = g3.add_starting();
-	int x9 = g3.add_acceptor("ab");
-	int x10 = g3.add_acceptor("a");
+	int x9 = g3.add_acceptor();
+	int x10 = g3.add_acceptor();
 
 	g1.connect(x0, x1, "");
 	g1.connect(x0, x2, "");

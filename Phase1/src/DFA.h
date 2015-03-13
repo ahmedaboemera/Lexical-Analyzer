@@ -13,13 +13,14 @@
 class DFA {
 public:
 	DFA(NFA& nfa);
-	Acceptor accepts(string expression); // returns null if expression
-										 // is not accepted
+
 	void print_debug();
 
 	int add_node(set<int> nfa_states); // adds a regular node in the graph
 
 	void connect(int node1, int node2, string input);
+
+	map<string, int>* get_connections(int state);
 
 	~DFA();
 private:
@@ -32,7 +33,7 @@ private:
 	int exists(set<int> u);
 	int get_first_unvisited_state(set<int> visited);
 	set<int> move(set<int> nfa_states, string in);
-	vector<Acceptor> acceptors;
+	set<int> acceptors;
 };
 
 #endif /* SRC_DFA_H_ */

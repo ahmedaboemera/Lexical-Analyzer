@@ -13,25 +13,6 @@
 
 using namespace std;
 
-class Acceptor {
-public:
-	Acceptor(int id, string accepted_expression) {
-		this->id = id;
-		this->accepted_expr = accepted_expression;
-	}
-	int get_id() const {
-		return this->id;
-	}
-	string get_accepted_expression() const {
-		return this->accepted_expr;
-	}
-	~Acceptor() {
-	}
-private:
-	int id;
-	string accepted_expr;
-};
-
 class NFA {
 
 public:
@@ -41,8 +22,9 @@ public:
 	static NFA* _close(const NFA& g);
 	int add_node(); // adds a regular node in the graph
 	int add_starting(); // adds a starting node to the graph
-	int add_acceptor(string accepted_expression = "NONE");
+	int add_acceptor();
 	set<int> get_starting();
+	set<int> get_acceptors();
 	set<string> get_lang();
 	void connect(int node1, int node2, string input);
 	void print_debug();
@@ -54,7 +36,7 @@ public:
 private:
 	static unsigned int label_counter;
 	set<int> starting_points;
-	vector<Acceptor> acceptors;
+	set<int> acceptors;
 	map<int, map<string, set<int> > > adj_list;
 	set<string> input_laguage;
 };
