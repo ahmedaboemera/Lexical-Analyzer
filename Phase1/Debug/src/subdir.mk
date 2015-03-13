@@ -10,7 +10,11 @@ CPP_SRCS += \
 ../src/NFABuilder.cpp \
 =======
 <<<<<<< HEAD
+<<<<<<< HEAD
 ../src/NFABuilder.cpp \
+=======
+>>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
+>>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
 =======
 >>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
 >>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
@@ -24,7 +28,11 @@ OBJS += \
 ./src/NFABuilder.o \
 =======
 <<<<<<< HEAD
+<<<<<<< HEAD
 ./src/NFABuilder.o \
+=======
+>>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
+>>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
 =======
 >>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
 >>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
@@ -38,7 +46,11 @@ CPP_DEPS += \
 ./src/NFABuilder.d \
 =======
 <<<<<<< HEAD
+<<<<<<< HEAD
 ./src/NFABuilder.d \
+=======
+>>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
+>>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
 =======
 >>>>>>> 15c4dc3cd8abcd9291b34f9b75d841c62308267e
 >>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
