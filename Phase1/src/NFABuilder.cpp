@@ -25,18 +25,18 @@ vector<NFA*> NFA_Builder::process_file() {
 }
 
 NFA* NFA_Builder::process_next_line() {
-	int i, j;
+	int i=0, j=0;
 	string line = read_next_line();
-
-	for (i = 0; i < line.length() && line[i] == ' '; i++)
-		;						// pass all spaces before name
-	for (j = i; j < line.length() && line[j] != '=' && line[j] != ':'; j++)
-		;	// pass all spaces before name
+	string x ="";
+	for(i=0; i<line.length();i++){
+		if(line[i]!=' ')
+			x += line[i];
+	}
+	line = x;
+	for (j = 0; j < line.length() && line[j] != '=' && line[j] != ':'; j++);	// pass all spaces before name
+	string lable = line.substr(0, j);
 	j++;
-	for (; j < line.length() && line[j] == ' '; j++)
-		;
 
-	string lable = line.substr(i, j - i);
 	NFA* nfa;
 	stack<string>* s = this->p->postFix_generator(
 			line.substr(j, line.length() - j));
@@ -46,7 +46,7 @@ NFA* NFA_Builder::process_next_line() {
 		s->pop();
 	}
 	if (line.find(':') != string::npos) {	// defining nonterminal
-		nfa = generate_NFA(t);
+		nonterminal_NFA_map[lable] = generate_NFA(t);
 		return NULL;
 	} else {								// defining terminal
 		nfa = generate_NFA(t);

@@ -1,7 +1,7 @@
 #ifndef SRC_PARSER_H
 #define SRC_PARSER_H
 
-#include <fstream>
+#include <iostream>
 #include <stack>
 #include <string>
 
