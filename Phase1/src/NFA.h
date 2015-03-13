@@ -54,8 +54,8 @@ private:
 	static unsigned int label_counter;
 	vector<int> starting_points;
 	vector<Acceptor> acceptors;
+	map<int, map<string, vector<int> > > adj_list;
 	set<string> input_laguage;
-	map<int, map<string, vector<int>>> adj_list;
 };
 
 #endif /* SRC_NFA_H_ */
