@@ -13,12 +13,12 @@ NFA_Builder::NFA_Builder(char* s) {
 }
 
 vector<NFA*> NFA_Builder::process_file() {
-	vector<NFA*> all_nfa = new vector<NFA*>();
+	vector<NFA*> all_nfa;
 
 	while(!in.eof()){
 		NFA* temp = process_next_line();
 		if(temp != NULL)				// non-terminal: should be added
-			all_nfa.push_back(temp));
+			all_nfa.push_back(temp);
 	}
 
 	return all_nfa;
