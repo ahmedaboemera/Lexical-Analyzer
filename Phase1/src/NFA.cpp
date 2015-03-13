@@ -124,10 +124,10 @@ set<int> NFA::epsilon_closure(vector<int> state) {
 	return epsClos;
 }
 
-vector<int>* NFA::next_states(int cur_state, string input) {
-	map<int, map<string, vector<int>>> ::iterator it1 = adj_list.find(cur_state);
+set<int>* NFA::next_states(int cur_state, string input) {
+	map<int, map<string, set<int>>> ::iterator it1 = adj_list.find(cur_state);
 	if (it1 != adj_list.end()) {
-		map<string, vector<int>>::iterator it2 = it1->second.find(input);
+		map<string, set<int>>::iterator it2 = it1->second.find(input);
 		if (it2 != it1->second.end()) {
 			return &(it2->second);
 		}
@@ -136,7 +136,7 @@ vector<int>* NFA::next_states(int cur_state, string input) {
 	return nullptr;
 }
 
-map<string, vector<int>>* NFA::get_connections(int state) {
+map<string, set<int>>* NFA::get_connections(int state) {
 	if (adj_list.find(state) != adj_list.end()) {
 		return &(adj_list.find(state)->second);
 	}
@@ -145,16 +145,16 @@ map<string, vector<int>>* NFA::get_connections(int state) {
 
 int NFA::add_node() {
 	this->adj_list.insert(
-			pair<int, map<string, vector<int> > >(label_counter,
-					map<string, vector<int> >()));
+			pair<int, map<string, set<int> > >(label_counter,
+					map<string, set<int> >()));
 	label_counter++;
 	return label_counter - 1;
 }
 
 int NFA::add_starting() {
 	this->adj_list.insert(
-			pair<int, map<string, vector<int> > >(label_counter,
-					map<string, vector<int> >()));
+			pair<int, map<string, set<int> > >(label_counter,
+					map<string, set<int> >()));
 	this->starting_points.push_back(label_counter);
 	label_counter++;
 	return label_counter - 1;
@@ -162,20 +162,20 @@ int NFA::add_starting() {
 
 int NFA::add_acceptor(string accepted_expression) {
 	this->adj_list.insert(
-			pair<int, map<string, vector<int> > >(label_counter,
-					map<string, vector<int> >()));
+			pair<int, map<string, set<int> > >(label_counter,
+					map<string, set<int> >()));
 	this->acceptors.push_back(Acceptor(label_counter, accepted_expression));
 	label_counter++;
 	return label_counter - 1;
 }
 
 void NFA::connect(int node1, int node2, string input) {
-	map<string, vector<int>>* connections = &this->adj_list.at(node1);
+	map<string, set<int>>* connections = &this->adj_list.at(node1);
 	// if connections with the same input already exist
 	if (connections->find(input) != connections->end()) {
-		// simply push the new node into the vector of nodes connected to
+		// simply push the new node into the set of nodes connected to
 		// node1 with the same string input
-		connections->at(input).push_back(node2);
+		connections->at(input).insert(node2);
 	}
 	// else, this is the first connection to be inserted that connects node1
 	// to node2 with the given string input
@@ -207,13 +207,13 @@ void NFA::print_debug() {
 	}
 	cout << endl;
 
-	for (map<int, map<string, vector<int>>> ::iterator it = adj_list.begin();
+	for (map<int, map<string, set<int>>> ::iterator it = adj_list.begin();
 	it != adj_list.end(); it++) {
 		cout << it->first << ":" << endl;
-		for (map<string, vector<int>>::iterator it2 = it->second.begin();
+		for (map<string, set<int>>::iterator it2 = it->second.begin();
 		it2 != it->second.end(); it2++) {
 			cout << "\t" << it2 -> first << ":";
-			for (vector<int>::iterator it3 = it2->second.begin(); it3 != it2->second.end();
+			for (set<int>::iterator it3 = it2->second.begin(); it3 != it2->second.end();
 			it3++) {
 				cout << *it3 << ", ";
 			}
