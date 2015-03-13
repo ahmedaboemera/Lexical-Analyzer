@@ -12,9 +12,16 @@ NFA_Builder::NFA_Builder(char* s) {
 	this->p = new Parser();
 }
 
-NFA* NFA_Builder::process_file() {
-	// TODO
-	return process_next_line();
+vector<NFA*> NFA_Builder::process_file() {
+	vector<NFA*> all_nfa = new vector<NFA*>();
+
+	while(!in.eof()){
+		NFA* temp = process_next_line();
+		if(temp != NULL)				// non-terminal: should be added
+			all_nfa.push_back(temp));
+	}
+
+	return all_nfa;
 }
 
 NFA* NFA_Builder::process_next_line() {
@@ -44,6 +51,7 @@ NFA* NFA_Builder::process_next_line() {
 //	}
 	if (line.find(':') != string::npos) {	// defining nonterminal
 		nfa = generate_nonterminal_nfa(t);
+		return NULL;
 	} else {								// defining terminal
 		nfa = generate_terminal_nfa(t);
 	}
