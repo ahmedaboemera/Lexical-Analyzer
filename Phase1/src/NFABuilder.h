@@ -12,21 +12,10 @@
 #include <fstream>
 #include <stack>
 #include <map>
-<<<<<<< HEAD
-<<<<<<< HEAD
-#include <NFA.h>
-#include <Parser.h>
-=======
-=======
->>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
 #include "NFA.h"
 #include "Parser.h"
 #include <string>
 #include <vector>
-<<<<<<< HEAD
->>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
-=======
->>>>>>> c52159a70d9a1726a1191f5192aa1fee3ae2a5c0
 
 class NFA_Builder {
 public:
