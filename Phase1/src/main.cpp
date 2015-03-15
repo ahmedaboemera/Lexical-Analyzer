@@ -1,6 +1,7 @@
 #include <iostream>
 #include "NFA.h"
 #include "DFA.h"
+#include "DFAMinimizer.h";
 #include <algorithm>
 
 using namespace std;
@@ -41,7 +42,9 @@ NFA* xyz() {
 	int x7 = g1->add_node();
 	int x8 = g1->add_node();
 	int x9 = g1->add_node();
-	int end = g1->add_acceptor();
+	int end = g1->add_acceptor("hey");
+	int end2 = g1->add_acceptor("there");
+	int end3 = g1->add_acceptor("bitch!");
 
 	g1->connect(st, x1, EPS);
 	g1->connect(st, x7, EPS);
@@ -56,6 +59,28 @@ NFA* xyz() {
 	g1->connect(x7, x8, "a");
 	g1->connect(x8, x9, "b");
 	g1->connect(x9, end, "b");
+	g1->connect(x9, end2, "a");
+	g1->connect(x9, end3, EPS);
+
+	return g1;
+}
+
+NFA* zyx() {
+	NFA* g1 = new NFA();
+
+	int A = g1->add_starting();
+	int B = g1->add_acceptor();
+	int D = g1->add_node();
+	int C = g1->add_acceptor();
+
+	g1->connect(A, B, "0");
+	g1->connect(A, C, "0");
+	g1->connect(B, A, "1");
+	g1->connect(B, C, "1");
+	g1->connect(D, D, "1");
+	g1->connect(D, B, "0");
+	g1->connect(C, D, "0");
+	g1->connect(C, D, "1");
 
 	return g1;
 }
@@ -152,11 +177,22 @@ int main() {
 //	for (set<int>::iterator it = result.begin(); it != result.end(); it++)
 //		cout << *it << endl;
 
-	NFA* g = xyz();
+	NFA* g = zyx();
 
-	DFA* d = new DFA(*g);
+	vector<string> priorities;
+	priorities.push_back("hey");
+
+	DFA* d = new DFA(*g, priorities);
 
 	d->print_debug();
+	//--------------- MY CODE -------------\\
+
+	DFA* out;
+	cout<<"-----------------------\n";
+	DFAMinimizer::_minimize_dfa(d, out);
+	out->print_debug();
+
+	//--------------- _______ -------------\\
 
 	return 0;
 }
