@@ -26,6 +26,34 @@ cout<<"\n";
 
 
 
+void build_DFA(vector<set<int> >* sets, map<int, int>* node_set_map, DFA* orig, DFA* result){
+
+	map<int, int> set_node_map;
+	// create nodes and fill set_node_map
+	int i=0;
+	for(vector<set<int> >::iterator it=sets->begin(); it!=sets->end(); it++, i++){
+		int node_ind;
+		if( /*it->find( orig->get_starting() ) != sets->end()*/ )			// get starting unimplemented yet
+			node_ind = result->add_starting();
+		else if( orig->is_acceptor(*it->begin()) )
+			node_ind = result->add_acceptor( orig->get_accepted_string(*it->begin()) );
+		else
+			node_ind = result->add_node();
+		set_node_map[ node_ind ] = i;
+	}
+
+	map<string, int>* temp;
+	i=0;
+	for(vector<set<int> >::iterator it=sets->begin(); it!=sets->end(); it++, i++){
+		temp = orig->get_connections( *(it->begin()) );
+		for(map<string, int>::iterator it=temp->begin(); it!=temp->end(); it++){
+			result->connect(set_node_map[i], set_node_map[it->second], it->first);
+		}
+	}
+}
+
+
+
 void DFAMinimizer::_minimize_dfa(DFA* in, DFA* out){
 	vector<set<int> > sets_before, sets_after;
 
@@ -83,6 +111,8 @@ cout<<"\t--creating new set ...\n";
 		// update node_state_map for the next iteration
 		update_map(&sets_after, &node_set_map);
 	}
+
+	build_DFA(&sets_after, &node_set_map, in, out);
 }
 
 
