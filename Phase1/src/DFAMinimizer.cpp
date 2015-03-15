@@ -48,42 +48,42 @@ cout<<"\n\n-------------------------------\n\tstarting new pass\n---------------
 		sets_before = sets_after;
 		sets_after.clear();
 
-		for(set<int> s:sets_before){
+		for(set<int> s:sets_before){				// loop on sets
 
-			vector<set<int> > splitted_sets;
+			vector<set<int>> splitted_sets;
 			for(int state : s){						// loop on states
 cout<<"\nworking on state "<<state<<":\n\n     ";
 				bool found_group=false;
-				for(set<int> new_s : splitted_sets){		// looping on splitted sets
-cout<<"\tcomparing with one splitted state\n";
-					map<string, int> m1 = *in->get_connections(*new_s.begin());
+
+				vector<set<int>>::iterator s_next_level=splitted_sets.begin();
+				for(; s_next_level!=splitted_sets.end(); s_next_level++){		// looping on splitted sets
+					map<string, int> m1 = *in->get_connections(*s_next_level->begin());
 					map<string, int> m2 = *in->get_connections(state);
 					map<string, int>::iterator it;
 
 					// check if state is mergeable with this set - compare connections
 					for(it = m1.begin(); it!= m1.end(); it++){
-cout<<"for input \""<<it->first<<": ";
 						// o/p undefined for this input || output nodes are in different sets
 						if(m2.find(it->first)==m2.end() || node_set_map[ m2[it->first] ] != node_set_map[it->second])
 							break;
-cout<<"match\n";
 					}
-cout<<'\n';
 
 					// found the set that matches
 					if(it==m1.end()){
-cout<<"\t--adding to splitted_set\n";
-						new_s.insert(state);
 						found_group = true;
 						break;
 					}
 				}
-				if(!found_group){				// create a set for this poor state
+				if(found_group){				// add this state to the lucky set
+cout<<"\t--adding to splitted_set .. set after update:\n";
+					s_next_level->insert(state);
+				}else{							// create a set for this poor state
 cout<<"\t--creating new set ...\n";
 					set<int> new_set;			// Baaaaaaaaaaaaaaaad allocation
 					new_set.insert(state);
 					splitted_sets.push_back(new_set);
 				}
+
 			}
 			sets_after.insert(sets_after.end(), splitted_sets.begin(), splitted_sets.end());	// append splitted sets
 		}
