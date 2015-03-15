@@ -42,7 +42,9 @@ NFA* xyz() {
 	int x7 = g1->add_node();
 	int x8 = g1->add_node();
 	int x9 = g1->add_node();
-	int end = g1->add_acceptor();
+	int end = g1->add_acceptor("hey");
+	int end2 = g1->add_acceptor("there");
+	int end3 = g1->add_acceptor("bitch!");
 
 	g1->connect(st, x1, EPS);
 	g1->connect(st, x7, EPS);
@@ -57,6 +59,8 @@ NFA* xyz() {
 	g1->connect(x7, x8, "a");
 	g1->connect(x8, x9, "b");
 	g1->connect(x9, end, "b");
+	g1->connect(x9, end2, "a");
+	g1->connect(x9, end3, EPS);
 
 	return g1;
 }
@@ -175,7 +179,10 @@ int main() {
 
 	NFA* g = zyx();
 
-	DFA* d = new DFA(*g);
+	vector<string> priorities;
+	priorities.push_back("hey");
+
+	DFA* d = new DFA(*g, priorities);
 
 	d->print_debug();
 	//--------------- MY CODE -------------\\
