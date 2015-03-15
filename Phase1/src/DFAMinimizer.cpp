@@ -29,16 +29,8 @@ cout<<"\n";
 void DFAMinimizer::_minimize_dfa(DFA* in, DFA* out){
 	vector<set<int> > sets_before, sets_after;
 
-	// get all acceptor nodes & group them
-
-	//------ temp code for testing -------
-	set<int> s1, s2;
-	s1.insert(0);s1.insert(1);s1.insert(2);s1.insert(3);	// all non-accepting states in test example
-	s2.insert(4);											// all accepting states in test example
-	sets_after.push_back(s1);
-	sets_after.push_back(s2);
-	//------------------------------------
-
+	// get all acceptor states classes
+	sets_after = in->get_acceptors_classes();
 	map<int, int> node_set_map;
 	update_map(&sets_after, &node_set_map);
 
@@ -90,8 +82,6 @@ cout<<"\t--creating new set ...\n";
 
 		// update node_state_map for the next iteration
 		update_map(&sets_after, &node_set_map);
-		int i;
-		cin>>i;
 	}
 }
 

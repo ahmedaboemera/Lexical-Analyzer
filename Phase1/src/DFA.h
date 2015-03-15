@@ -13,21 +13,39 @@ public:
 
 	int add_node(set<int> nfa_states); // adds a regular node in the graph
 
+	int add_node(); // adds a regular node in the graph
+	int add_starting(); // adds a starting node to the graph
+	//todo
+	int add_acceptor(string accepted = "");
+
 	void connect(int node1, int node2, string input);
 
 	map<string, int>* get_connections(int state);
+
+	vector<set<int>> get_acceptors_classes();
+
+	vector<string> get_acceptors_classes_values();
+
+	bool is_acceptor(int state);
+
+	string get_accepted_string(int state);
 
 	~DFA();
 private:
 	NFA nfa;
 	vector<string> priorities;
-	vector<set<int>> acceptors_classes;
 	static unsigned int label_counter;
 	int starting;
 	map<int, set<int>> d_states;
 	map<int, map<string, int>> adj_list;
-	set<int>* find_acceptor_set(pair<int, string>* p);
-	void classify_acceptors();
+
+	/* new functions - 15/3 @ 7PM */
+	set<int>* find_acceptor_set(map<int, string>::iterator p);
+	void classify_states();
+	vector<set<int>> states_classes;
+	vector<string> states_classes_values;
+	/*****************************/
+
 	void subset_construct(vector<string> priorities);
 	int exists(set<int> u);
 	int get_first_unvisited_state(set<int> visited);

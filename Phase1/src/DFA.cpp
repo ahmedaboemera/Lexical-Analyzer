@@ -16,28 +16,56 @@ DFA::DFA(NFA& nfa, vector<string> priorities) {
  * 		same string as the given pair, return -1 as an indication that a new
  * 		set should be pushed in acceptors_classes
  * */
-//set<int>* DFA::find_acceptor_set(pair<int, string>* p) {
-//	for (vector<int>::iterator it = acceptors_classes.begin(); it != acceptors_classes.end(); it++) {
-//		/* it points to a set<int>, we need to verify whether the states in this set accepts the same
-//		 * string as the one encapsulated in p
-//		 * */
-//		set<int> cur_set = *it;
-//		int first_elem_in_cur_set = cur_set.begin();
-//		if (acceptors.find(first_elem_in_cur_set)->second.compare(p->second) == 0) // cur_set accepts the same string
-//			return it;
-//
-//	}
-//	/* if none of the classes contain states that accept this string, return nullptr as
-//	 * an indication that a new set (class) is to be created for this accepted string
-//	 * */
-//	return nullptr;
-//}
-//
-//void DFA::classify_acceptors() {
-//	for (map<int, string>::iterator it = acceptors.begin(); it != acceptors.end(); it++) {
-////		set<int>* acceptor_set = find_acceptor_set(it);
-//	}
-//}
+set<int>* DFA::find_acceptor_set(map<int, string>::iterator p) {
+	for (vector<set<int>>::iterator it = states_classes.begin();
+			it != states_classes.end(); it++) {
+		/* it points to a set<int>, we need to verify whether the states in this set accepts the same
+		 * string as the one encapsulated in p
+		 * */
+		set<int> cur_set = *it;
+		int first_elem_in_cur_set = *(cur_set.begin());
+		if (acceptors.find(first_elem_in_cur_set)->second.compare(p->second)
+				== 0) // cur_set accepts the same string
+			return &(*it);
+	}
+	/* if none of the classes contain states that accept this string, return nullptr as
+	 * an indication that a new set (class) is to be created for this accepted string
+	 * */
+	return nullptr;
+}
+
+void DFA::classify_states() {
+	/*
+	 * for each acceptor in the DFA, we need to check whether the other acceptors that accept the same string
+	 * as it does exist in a predefined class or not
+	 * */
+	for (map<int, string>::iterator it = acceptors.begin();
+			it != acceptors.end(); it++) {
+		set<int>* acceptor_set = find_acceptor_set(it);
+		if (acceptor_set == nullptr) { // class was not previously declared as a set; create one and push it
+			set<int> s;
+			s.insert(it->first);
+			states_classes.push_back(s);
+			states_classes_values.push_back(it->second);
+		} else { // class was already declared as a set, acceptor_set now points to it
+			acceptor_set->insert(it->first);
+		}
+	}
+
+	/*
+	 * must create another class for the unaccepted states
+	 * */
+	set<int> unaccepted;
+	for (unsigned int i = 0; i < label_counter; i++) {
+		if (acceptors.find(i) == acceptors.end())
+			unaccepted.insert(i);
+	}
+	states_classes.push_back(unaccepted);
+}
+
+vector<set<int>> DFA::get_acceptors_classes() {
+	return states_classes;
+}
 
 int DFA::exists(set<int> u) {
 	for (map<int, set<int>>::iterator entry = d_states.begin();
@@ -49,6 +77,10 @@ int DFA::exists(set<int> u) {
 	return -1;
 }
 
+vector<string> DFA::get_acceptors_classes_values() {
+	return states_classes_values;
+}
+
 set<int> DFA::move(set<int> nfa_states, string in) {
 	set<int> next;
 	for (set<int>::iterator it = nfa_states.begin(); it != nfa_states.end();
@@ -58,6 +90,16 @@ set<int> DFA::move(set<int> nfa_states, string in) {
 			next.insert(res->begin(), res->end());
 	}
 	return next;
+}
+
+bool DFA::is_acceptor(int state) {
+	return acceptors.find(state) != acceptors.end();
+}
+
+string DFA::get_accepted_string(int state) {
+	if (acceptors.find(state) != acceptors.end())
+		return acceptors.find(state)->second;
+	return "";
 }
 
 int DFA::get_first_unvisited_state(set<int> visited) {
@@ -103,6 +145,7 @@ void DFA::subset_construct(vector<string> priorities) {
 			connect(current_state, dfa_state_id, *it);
 		}
 	}
+	classify_states();
 }
 
 void DFA::connect(int node1, int node2, string input) {
@@ -119,11 +162,11 @@ map<string, int>* DFA::get_connections(int state) {
 
 // returns the label of the nfa state with the highest acceptor priority
 int DFA::acceptors_tie_breaker(set<int> nfa_acceptors) {
-	for (vector<string>::iterator it = priorities.begin(); it != priorities.end();
-			it++) {
+	for (vector<string>::iterator it = priorities.begin();
+			it != priorities.end(); it++) {
 		// do we have a match??
-		for (set<int>::iterator it2 = nfa_acceptors.begin(); it2 != nfa_acceptors.end();
-				it2++) {
+		for (set<int>::iterator it2 = nfa_acceptors.begin();
+				it2 != nfa_acceptors.end(); it2++) {
 			string acceptor_string = nfa.get_acceptors().find(*it2)->second;
 			if (it->compare(acceptor_string) == 0)
 				return *it2;
@@ -133,6 +176,14 @@ int DFA::acceptors_tie_breaker(set<int> nfa_acceptors) {
 	// non of the nfa_acceptors are actually acceptors!!!!!!!
 	return -1;
 }
+
+//int DFA::add_node() {
+//	this->adj_list.insert(
+//			pair<int, map<string, int>>(label_counter, map<string, int>()));
+//	this->d_states.insert(pair<int, set<int>> (label_counter, set<int>()));
+//	label_counter++;
+//	return label_counter - 1;
+//}
 
 int DFA::add_node(set<int> nfa_states) {
 	set<int> nfa_acceptors;
@@ -148,12 +199,16 @@ int DFA::add_node(set<int> nfa_states) {
 		if (nfa_acceptors.size() > 1) { // more than one NFA acceptor are included
 										// in this DFA state, must used tiebreaker
 			int highest_priority_nfa = acceptors_tie_breaker(nfa_acceptors);
-			string highest_priority_nfa_string = nfa.get_acceptors().find(highest_priority_nfa)->second;
-			acceptors.insert(pair<int,string>(label_counter, highest_priority_nfa_string));
-		}
-		else {
-			string nfa_acceptor_string = nfa.get_acceptors().find(*(nfa_acceptors.begin()))->second;
-			acceptors.insert(pair<int, string>(label_counter, nfa_acceptor_string));
+			string highest_priority_nfa_string = nfa.get_acceptors().find(
+					highest_priority_nfa)->second;
+			acceptors.insert(
+					pair<int, string>(label_counter,
+							highest_priority_nfa_string));
+		} else {
+			string nfa_acceptor_string = nfa.get_acceptors().find(
+					*(nfa_acceptors.begin()))->second;
+			acceptors.insert(
+					pair<int, string>(label_counter, nfa_acceptor_string));
 		}
 	}
 	label_counter++;
@@ -164,10 +219,23 @@ void DFA::print_debug() {
 
 	cout << "Starting: " << this->starting << endl;
 	cout << "Accepting:";
-	for (set<int>::iterator it = acceptors_keys.begin(); it != acceptors_keys.end(); it++) {
+	for (set<int>::iterator it = acceptors_keys.begin();
+			it != acceptors_keys.end(); it++) {
 		cout << " <" << *it << "," << acceptors.find(*it)->second << ">";
 	}
 	cout << endl;
+	cout << "Classified in the following classes: " << endl;
+	unsigned int i = 0;
+	for (vector<set<int>>::iterator it = states_classes.begin();
+			it != states_classes.end(); it++, i++) {
+		cout << "Class:";
+		for (set<int>::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+			cout << " " << *it2;
+		}
+		if (i < states_classes_values.size())
+			cout << " Accepts: " << states_classes_values[i];
+		cout << endl;
+	}
 	for (map<int, map<string, int>>::iterator it = adj_list.begin();
 			it != adj_list.end(); it++) {
 		cout << it->first << ":" << endl;

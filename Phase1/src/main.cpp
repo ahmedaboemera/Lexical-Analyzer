@@ -44,7 +44,9 @@ NFA* xyz() {
 	int x9 = g1->add_node();
 	int end = g1->add_acceptor("hey");
 	int end2 = g1->add_acceptor("there");
-	int end3 = g1->add_acceptor("bitch!");
+	int end3 = g1->add_acceptor("k");
+	int end4 = g1->add_acceptor("hey");
+	int end5 = g1->add_acceptor("there");
 
 	g1->connect(st, x1, EPS);
 	g1->connect(st, x7, EPS);
@@ -61,6 +63,8 @@ NFA* xyz() {
 	g1->connect(x9, end, "b");
 	g1->connect(x9, end2, "a");
 	g1->connect(x9, end3, EPS);
+	g1->connect(x9, end4, "a");
+	g1->connect(x9, end5, "b");
 
 	return g1;
 }
@@ -69,9 +73,9 @@ NFA* zyx() {
 	NFA* g1 = new NFA();
 
 	int A = g1->add_starting();
-	int B = g1->add_acceptor();
+	int B = g1->add_acceptor("s1");
 	int D = g1->add_node();
-	int C = g1->add_acceptor();
+	int C = g1->add_acceptor("s1");
 
 	g1->connect(A, B, "0");
 	g1->connect(A, C, "0");
@@ -81,7 +85,6 @@ NFA* zyx() {
 	g1->connect(D, B, "0");
 	g1->connect(C, D, "0");
 	g1->connect(C, D, "1");
-
 	return g1;
 }
 
@@ -178,21 +181,23 @@ int main() {
 //		cout << *it << endl;
 
 	NFA* g = zyx();
+//	NFA* g = xyz();
 
 	vector<string> priorities;
-	priorities.push_back("hey");
+	priorities.push_back("s1");
 
 	DFA* d = new DFA(*g, priorities);
 
 	d->print_debug();
-	//--------------- MY CODE -------------\\
+
+//	//--------------- MY CODE -------------\\
 
 	DFA* out;
 	cout<<"-----------------------\n";
 	DFAMinimizer::_minimize_dfa(d, out);
 	out->print_debug();
 
-	//--------------- _______ -------------\\
+//	//--------------- _______ -------------\\
 
 	return 0;
 }
