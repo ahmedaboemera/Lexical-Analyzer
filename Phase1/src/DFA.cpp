@@ -2,10 +2,14 @@
 
 unsigned int DFA::label_counter = 0; // static variable initialized
 
+DFA::DFA() {
+	this->starting = label_counter;
+}
+
 DFA::DFA(NFA& nfa, vector<string> priorities) {
 	this->nfa = nfa;
 	this->priorities = priorities;
-	starting = 0;
+	starting = label_counter;
 	this->subset_construct(priorities);
 }
 /*
@@ -101,6 +105,9 @@ string DFA::get_accepted_string(int state) {
 		return acceptors.find(state)->second;
 	return "";
 }
+int DFA::get_starting() {
+	return starting;
+}
 
 int DFA::get_first_unvisited_state(set<int> visited) {
 	for (map<int, set<int>>::iterator it = d_states.begin();
@@ -177,13 +184,32 @@ int DFA::acceptors_tie_breaker(set<int> nfa_acceptors) {
 	return -1;
 }
 
-//int DFA::add_node() {
-//	this->adj_list.insert(
-//			pair<int, map<string, int>>(label_counter, map<string, int>()));
-//	this->d_states.insert(pair<int, set<int>> (label_counter, set<int>()));
-//	label_counter++;
-//	return label_counter - 1;
-//}
+int DFA::add_starting() {
+	this->adj_list.insert(
+			pair<int, map<string, int>>(label_counter,
+					map<string, int>()));
+	this->starting = label_counter;
+	label_counter++;
+	return label_counter - 1;
+}
+
+int DFA::add_acceptor(string accepted) {
+	this->adj_list.insert(
+			pair<int, map<string, int>>(label_counter,
+					map<string, int>()));
+	this->acceptors.insert(pair<int, string>(label_counter, accepted));
+	this->acceptors_keys.insert(label_counter);
+	label_counter++;
+	return label_counter - 1;
+}
+
+int DFA::add_node() {
+	this->adj_list.insert(
+			pair<int, map<string, int>>(label_counter, map<string, int>()));
+	this->d_states.insert(pair<int, set<int>> (label_counter, set<int>()));
+	label_counter++;
+	return label_counter - 1;
+}
 
 int DFA::add_node(set<int> nfa_states) {
 	set<int> nfa_acceptors;

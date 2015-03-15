@@ -5,6 +5,8 @@
 
 class DFA {
 public:
+	DFA();
+
 	DFA(NFA& nfa, vector<string> priorities);
 
 	void print_debug();
@@ -14,8 +16,10 @@ public:
 	int add_node(set<int> nfa_states); // adds a regular node in the graph
 
 	int add_node(); // adds a regular node in the graph
+
 	int add_starting(); // adds a starting node to the graph
 	//todo
+
 	int add_acceptor(string accepted = "");
 
 	void connect(int node1, int node2, string input);
@@ -25,6 +29,8 @@ public:
 	vector<set<int>> get_acceptors_classes();
 
 	vector<string> get_acceptors_classes_values();
+
+	int get_starting();
 
 	bool is_acceptor(int state);
 
