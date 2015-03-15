@@ -180,11 +180,14 @@ int main() {
 //	for (set<int>::iterator it = result.begin(); it != result.end(); it++)
 //		cout << *it << endl;
 
-	NFA* g = zyx();
-//	NFA* g = xyz();
+//	NFA* g = zyx();
+	NFA* g = xyz();
 
 	vector<string> priorities;
-	priorities.push_back("s1");
+//	priorities.push_back("s1");
+	priorities.push_back("hey");
+	priorities.push_back("there");
+	priorities.push_back("k");
 
 	DFA* d = new DFA(*g, priorities);
 

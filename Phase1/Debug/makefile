@@ -13,12 +13,6 @@ RM := rm -rf
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
-<<<<<<< HEAD
-ifneq ($(strip $(CC_DEPS)),)
--include $(CC_DEPS)
-endif
-=======
-<<<<<<< HEAD
 ifneq ($(strip $(CC_DEPS)),)
 -include $(CC_DEPS)
 endif
@@ -30,41 +24,12 @@ ifneq ($(strip $(C_UPPER_DEPS)),)
 endif
 ifneq ($(strip $(CXX_DEPS)),)
 -include $(CXX_DEPS)
-=======
->>>>>>> e7864a8729b0e2c0cdd27f5e5ce439fe389b599e
-ifneq ($(strip $(C++_DEPS)),)
--include $(C++_DEPS)
-endif
-ifneq ($(strip $(C_UPPER_DEPS)),)
--include $(C_UPPER_DEPS)
-endif
-<<<<<<< HEAD
-ifneq ($(strip $(CXX_DEPS)),)
--include $(CXX_DEPS)
-=======
-ifneq ($(strip $(CC_DEPS)),)
--include $(CC_DEPS)
->>>>>>> 7c241b8a30ef9e2031ae27f33638eed1a9e85e4a
->>>>>>> e7864a8729b0e2c0cdd27f5e5ce439fe389b599e
 endif
 ifneq ($(strip $(CPP_DEPS)),)
 -include $(CPP_DEPS)
 endif
-<<<<<<< HEAD
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
-=======
-<<<<<<< HEAD
-ifneq ($(strip $(C_DEPS)),)
--include $(C_DEPS)
-=======
-ifneq ($(strip $(CXX_DEPS)),)
--include $(CXX_DEPS)
-endif
-ifneq ($(strip $(C_UPPER_DEPS)),)
--include $(C_UPPER_DEPS)
->>>>>>> 7c241b8a30ef9e2031ae27f33638eed1a9e85e4a
->>>>>>> e7864a8729b0e2c0cdd27f5e5ce439fe389b599e
 endif
 endif
 
@@ -85,15 +50,7 @@ Phase1: $(OBJS) $(USER_OBJS)
 
 # Other Targets
 clean:
-<<<<<<< HEAD
 	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) Phase1
-=======
-<<<<<<< HEAD
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) Phase1
-=======
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) Phase1
->>>>>>> 7c241b8a30ef9e2031ae27f33638eed1a9e85e4a
->>>>>>> e7864a8729b0e2c0cdd27f5e5ce439fe389b599e
 	-@echo ' '
 
 .PHONY: all clean dependents
