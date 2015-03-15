@@ -13,27 +13,64 @@ NFA_Builder::NFA_Builder(char* s) {
 }
 
 vector<NFA*> NFA_Builder::process_file() {
-	vector<NFA*> all_nfa;
 
-	while(!in.eof()){
+	while (!in.eof()) {
 		NFA* temp = process_next_line();
-		if(temp != NULL)				// non-terminal: should be added
-			all_nfa.push_back(temp);
+		if (temp != NULL)				// non-terminal: should be added
+		{
+			this->all_nfa.push_back(temp);
+		}
 	}
 
 	return all_nfa;
 }
 
 NFA* NFA_Builder::process_next_line() {
-	int i=0, j=0;
+	int i = 0, j = 0;
 	string line = read_next_line();
-	string x ="";
-	for(i=0; i<line.length();i++){
-		if(line[i]!=' ')
+
+	if(line[0]=='{'){
+		vector<string> key_words;
+		string s="";
+		for(int i=1;i<line.length()-1;i++){
+			if(line[i]==' '){
+				key_words.push_back(s);
+				s=" ";
+			}
+			else{
+				s += line[i];
+			}
+		}
+		key_words.push_back(s);
+		for(vector<string>::iterator it = key_words.begin(); it!=key_words.end();++it){
+			string temp = "";
+			string y = *it;
+			for(int i=0 ; i<y.length()-1 ; i++){
+				temp += y[i];
+				temp += ".";
+			}
+			temp += y[y.length()-1];
+			stack<string>*s = this->p->postFix_generator(temp);
+			stack<string>*t = new stack<string> ();
+			while(!s->empty()){
+				t->push(s->top());
+				s->pop();
+			}
+			delete s;
+			NFA* tempo = generate_NFA(t);
+			this->all_nfa.push_back(tempo);
+		}
+		return NULL;
+	}
+
+	string x = "";
+	for (i = 0; i < line.length(); i++) {
+		if (line[i] != ' ')
 			x += line[i];
 	}
 	line = x;
-	for (j = 0; j < line.length() && line[j] != '=' && line[j] != ':'; j++);	// pass all spaces before name
+	for (j = 0; j < line.length() && line[j] != '=' && line[j] != ':'; j++)
+		;	// pass all spaces before name
 	string lable = line.substr(0, j);
 	j++;
 
@@ -89,11 +126,11 @@ NFA* NFA_Builder::parse_operand_to_nfa(string s) {
 		vector<NFA*> range;
 		for (int i = start; i <= end; i++) {
 			char now = i;
-			string in="";
+			string in = "";
 			in += now;
 			NFA* nfa = new NFA();
 			nfa->connect(// connect NFA of the terminal in single edge:	S------>A
-					nfa->add_starting(), nfa->add_acceptor(/*in*/), in); // karim-- add_acceptor was changed to take void parameters
+					nfa->add_starting(), nfa->add_acceptor(in), in);
 			range.push_back(nfa);
 		}
 
@@ -101,7 +138,7 @@ NFA* NFA_Builder::parse_operand_to_nfa(string s) {
 	}
 	NFA* nfa = new NFA();
 	nfa->connect(	// connect NFA of the terminal in single edge:	S------>A
-			nfa->add_starting(), nfa->add_acceptor(/*s*/), s); // karim-- add_acceptor was changed to take void parameters
+			nfa->add_starting(), nfa->add_acceptor(s), s);
 
 	return nfa;
 }

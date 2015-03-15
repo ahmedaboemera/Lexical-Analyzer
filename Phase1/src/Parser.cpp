@@ -40,6 +40,15 @@ stack<string>* Parser::postFix_generator(string line) {
 
 	string to_push = "";
 	for (std::string::iterator it = line.begin(); it != line.end(); ++it) {
+		if((*it) == '\\'){
+			it++;
+			switch((*it)){
+			default:
+				to_push += "\\";
+				to_push += (*it);
+			}
+			continue;
+		}
 		if ((*it) == '*') {
 			if((to_push).compare("")!=0){
 				post_fix->push(to_push);
