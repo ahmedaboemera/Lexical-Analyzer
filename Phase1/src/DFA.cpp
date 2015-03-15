@@ -1,18 +1,12 @@
-/*
- * DFA.cpp
- *
- *  Created on: Mar 12, 2015
- *      Author: karim
- */
-
 #include "DFA.h"
 
 unsigned int DFA::label_counter = 0; // static variable initialized
 
-DFA::DFA(NFA& nfa) {
+DFA::DFA(NFA& nfa, vector<string> priorities) {
 	this->nfa = nfa;
+	this->priorities = priorities;
 	starting = 0;
-	this->subset_construct();
+	this->subset_construct(priorities);
 }
 
 int DFA::exists(set<int> u) {
@@ -45,7 +39,7 @@ int DFA::get_first_unvisited_state(set<int> visited) {
 	return -1;
 }
 
-void DFA::subset_construct() {
+void DFA::subset_construct(vector<string> priorities) {
 	set<string> lang = nfa.get_lang();
 
 	set<int> inits = nfa.epsilon_closure(nfa.get_starting());
@@ -93,15 +87,45 @@ map<string, int>* DFA::get_connections(int state) {
 	return &(map_it->second);
 }
 
+// returns the label of the nfa state with the highest acceptor priority
+int DFA::acceptors_tie_breaker(set<int> nfa_acceptors) {
+	for (vector<string>::iterator it = priorities.begin(); it != priorities.end();
+			it++) {
+		// do we have a match??
+		for (set<int>::iterator it2 = nfa_acceptors.begin(); it2 != nfa_acceptors.end();
+				it2++) {
+			string acceptor_string = nfa.get_acceptors().find(*it2)->second;
+			if (it->compare(acceptor_string) == 0)
+				return *it2;
+		}
+	}
+
+	// non of the nfa_acceptors are actually acceptors!!!!!!!
+	return -1;
+}
+
 int DFA::add_node(set<int> nfa_states) {
 	set<int> nfa_acceptors;
-	set_intersection(nfa_states.begin(), nfa_states.end(), this->nfa.get_acceptors().begin(),
-			this->nfa.get_acceptors().end(), inserter(nfa_acceptors, nfa_acceptors.end()));
+	set_intersection(nfa_states.begin(), nfa_states.end(),
+			this->nfa.get_acceptors_keys().begin(),
+			this->nfa.get_acceptors_keys().end(),
+			inserter(nfa_acceptors, nfa_acceptors.end()));
 	d_states.insert(pair<int, set<int>>(label_counter, nfa_states));
 	adj_list.insert(
 			pair<int, map<string, int>>(label_counter, map<string, int>()));
-	if (!nfa_acceptors.empty())
-		acceptors.insert(label_counter);
+	if (!nfa_acceptors.empty()) {
+		acceptors_keys.insert(label_counter);
+		if (nfa_acceptors.size() > 1) { // more than one NFA acceptor are included
+										// in this DFA state, must used tiebreaker
+			int highest_priority_nfa = acceptors_tie_breaker(nfa_acceptors);
+			string highest_priority_nfa_string = nfa.get_acceptors().find(highest_priority_nfa)->second;
+			acceptors.insert(pair<int,string>(label_counter, highest_priority_nfa_string));
+		}
+		else {
+			string nfa_acceptor_string = nfa.get_acceptors().find(*(nfa_acceptors.begin()))->second;
+			acceptors.insert(pair<int, string>(label_counter, nfa_acceptor_string));
+		}
+	}
 	label_counter++;
 	return label_counter - 1;
 }
@@ -110,8 +134,9 @@ void DFA::print_debug() {
 
 	cout << "Starting: " << this->starting << endl;
 	cout << "Accepting:";
-	for (set<int>::iterator it = acceptors.begin(); it != acceptors.end(); it++)
-		cout << " " << *it;
+	for (set<int>::iterator it = acceptors_keys.begin(); it != acceptors_keys.end(); it++) {
+		cout << " <" << *it << "," << acceptors.find(*it)->second << ">";
+	}
 	cout << endl;
 	for (map<int, map<string, int>>::iterator it = adj_list.begin();
 			it != adj_list.end(); it++) {

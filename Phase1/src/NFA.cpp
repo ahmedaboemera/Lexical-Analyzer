@@ -15,10 +15,13 @@ NFA* NFA::_concatenate(const vector<NFA*>& gs) {
 	catNFA->starting_points.insert(gs.front()->starting_points.begin(),
 			gs.front()->starting_points.end());
 
-	catNFA->acceptors.insert(gs.back()->acceptors.begin(), gs.back()->acceptors.end());
+	catNFA->acceptors.insert(gs.back()->acceptors.begin(),
+			gs.back()->acceptors.end());
 
 	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
 		NFA* cur = *it;
+		catNFA->input_laguage.insert(cur->input_laguage.begin(),
+				cur->input_laguage.end());
 		catNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
 	}
 
@@ -27,24 +30,48 @@ NFA* NFA::_concatenate(const vector<NFA*>& gs) {
 		NFA* frst = *it;
 		NFA* scnd = *(it + 1);
 
-		for (set<int>::const_iterator it2 = frst->acceptors.begin();
+		for (map<int, string>::const_iterator it2 = frst->acceptors.begin();
 				it2 != frst->acceptors.end(); it2++) {
 			for (set<int>::const_iterator it3 = scnd->starting_points.begin();
 					it3 != scnd->starting_points.end(); it3++) {
-				catNFA->connect(*it2, *it3, EPS);
+				catNFA->connect(it2->first, *it3, EPS);
 			}
 		}
 	}
 	return catNFA;
 }
 
+NFA* NFA::_create_lexer(const vector<NFA*>& gs) {
+	NFA* lexer = new NFA();
+
+	int lexerSt = lexer->add_starting();
+	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
+		NFA* cur = *it;
+		lexer->input_laguage.insert(cur->input_laguage.begin(),
+				cur->input_laguage.end());
+		lexer->acceptors.insert(cur->acceptors.begin(), cur->acceptors.end());
+		lexer->acceptors_keys.insert(cur->acceptors_keys.begin(),
+				cur->acceptors_keys.end());
+		lexer->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
+		for (set<int>::const_iterator it2 = cur->starting_points.begin();
+				it2 != cur->starting_points.end(); it2++) {
+			lexer->connect(lexerSt, *it2, EPS);
+		}
+	}
+	return lexer;
+}
+
 NFA* NFA::_union(const vector<NFA*>& gs) {
 	NFA* unionNFA = new NFA();
 	int unionSt = unionNFA->add_starting();
-	int unionAcc = unionNFA->add_acceptor();
+	//todo
+	string accepted = "";
+	int unionAcc = unionNFA->add_acceptor(accepted);
 
 	for (vector<NFA*>::const_iterator it = gs.begin(); it != gs.end(); it++) {
 		NFA* cur = *it;
+		unionNFA->input_laguage.insert(cur->input_laguage.begin(),
+				cur->input_laguage.end());
 		unionNFA->adj_list.insert(cur->adj_list.begin(), cur->adj_list.end());
 
 		for (set<int>::const_iterator it2 = cur->starting_points.begin();
@@ -52,9 +79,9 @@ NFA* NFA::_union(const vector<NFA*>& gs) {
 			unionNFA->connect(unionSt, *it2, EPS);
 		}
 
-		for (set<int>::const_iterator it2 = cur->acceptors.begin();
+		for (map<int, string>::const_iterator it2 = cur->acceptors.begin();
 				it2 != cur->acceptors.end(); it2++) {
-			unionNFA->connect(*it2, unionAcc, EPS);
+			unionNFA->connect(it2->first, unionAcc, EPS);
 		}
 	}
 	return unionNFA;
@@ -65,8 +92,13 @@ NFA* NFA::_close(const NFA& g) {
 
 	closeNFA->adj_list.insert(g.adj_list.begin(), g.adj_list.end());
 
+	closeNFA->input_laguage.insert(g.input_laguage.begin(),
+			g.input_laguage.end());
+
 	int closeSt = closeNFA->add_starting();
-	int closeAcc = closeNFA->add_acceptor();
+	string accepted = "";
+	//todo:
+	int closeAcc = closeNFA->add_acceptor(accepted);
 
 	closeNFA->connect(closeSt, closeAcc, EPS);
 
@@ -75,16 +107,16 @@ NFA* NFA::_close(const NFA& g) {
 		closeNFA->connect(closeSt, *it, EPS);
 	}
 
-	for (set<int>::const_iterator it = g.acceptors.begin();
+	for (map<int, string>::const_iterator it = g.acceptors.begin();
 			it != g.acceptors.end(); it++) {
-		closeNFA->connect(*it, closeAcc, EPS);
+		closeNFA->connect(it->first, closeAcc, EPS);
 	}
 
-	for (set<int>::const_iterator it = g.acceptors.begin();
+	for (map<int, string>::const_iterator it = g.acceptors.begin();
 			it != g.acceptors.end(); it++) {
 		for (set<int>::const_iterator it2 = g.starting_points.begin();
 				it2 != g.starting_points.end(); it2++) {
-			closeNFA->connect(*it, *it2, EPS);
+			closeNFA->connect(it->first, *it2, EPS);
 		}
 	}
 	return closeNFA;
@@ -94,7 +126,7 @@ set<int> NFA::get_starting() {
 	return starting_points;
 }
 
-set<int> NFA::get_acceptors() {
+map<int, string> NFA::get_acceptors() {
 	return acceptors;
 }
 
@@ -161,11 +193,12 @@ int NFA::add_starting() {
 	return label_counter - 1;
 }
 
-int NFA::add_acceptor() {
+int NFA::add_acceptor(string accepted) {
 	this->adj_list.insert(
 			pair<int, map<string, set<int> > >(label_counter,
 					map<string, set<int> >()));
-	this->acceptors.insert(label_counter);
+	this->acceptors.insert(pair<int, string>(label_counter, accepted));
+	this->acceptors_keys.insert(label_counter);
 	label_counter++;
 	return label_counter - 1;
 }
@@ -202,9 +235,9 @@ void NFA::print_debug() {
 	cout << endl;
 
 	cout << "Accepting : ";
-	for (set<int>::iterator it = acceptors.begin();
+	for (map<int, string>::iterator it = acceptors.begin();
 			it != acceptors.end(); it++) {
-		cout << *it << ", ";
+		cout << it->first << ":" << it->second << ", ";
 	}
 	cout << endl;
 
@@ -224,6 +257,9 @@ void NFA::print_debug() {
 
 }
 
+set<int> NFA::get_acceptors_keys() {
+	return acceptors_keys;
+}
 NFA::NFA() {
 }
 
