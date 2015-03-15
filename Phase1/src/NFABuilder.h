@@ -23,6 +23,7 @@ public:
 	vector<NFA*> process_file();
 	virtual ~NFA_Builder();
 private:
+	vector<NFA*> all_nfa;
 	Parser* p;
 	ifstream in;
 	map<string, NFA*> nonterminal_NFA_map;
