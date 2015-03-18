@@ -26,28 +26,31 @@ cout<<"\n";
 
 
 
-void build_DFA(vector<set<int> >* sets, map<int, int>* node_set_map, DFA* orig, DFA* result){
+void build_DFA(vector<set<int> >* sets, map<int, int>& node_set_map, DFA* orig, DFA* result){
 
-	map<int, int> set_node_map;
+	map<int, int> set_newnode_map;
 	// create nodes and fill set_node_map
 	int i=0;
 	for(vector<set<int> >::iterator it=sets->begin(); it!=sets->end(); it++, i++){
 		int node_ind;
-		if( /*it->find( orig->get_starting() ) != sets->end()*/ )			// get starting unimplemented yet
+		if( it->find( orig->get_starting() ) != it->end() )			// get starting unimplemented yet
 			node_ind = result->add_starting();
 		else if( orig->is_acceptor(*it->begin()) )
 			node_ind = result->add_acceptor( orig->get_accepted_string(*it->begin()) );
 		else
 			node_ind = result->add_node();
-		set_node_map[ node_ind ] = i;
+		set_newnode_map[ i ] = node_ind;
+		cout<<"set "<<i<<" maps to node "<<node_ind<<'\n';
 	}
+	cout<<"\n";
 
 	map<string, int>* temp;
 	i=0;
-	for(vector<set<int> >::iterator it=sets->begin(); it!=sets->end(); it++, i++){
-		temp = orig->get_connections( *(it->begin()) );
-		for(map<string, int>::iterator it=temp->begin(); it!=temp->end(); it++){
-			result->connect(set_node_map[i], set_node_map[it->second], it->first);
+	for(vector<set<int> >::iterator it=sets->begin(); it!=sets->end(); it++, i++){	// loop on sets
+		temp = orig->get_connections( *(it->begin()) );		// get connections of representative node
+		for(map<string, int>::iterator it1=temp->begin(); it1!=temp->end(); it1++){
+			// loop on nodes connected to the representative node
+			result->connect(set_newnode_map[i], set_newnode_map[ node_set_map[it1->second] ], it1->first);
 		}
 	}
 }
@@ -63,7 +66,6 @@ void DFAMinimizer::_minimize_dfa(DFA* in, DFA* out){
 	update_map(&sets_after, &node_set_map);
 
 	while(sets_before.size() != sets_after.size()){
-cout<<"\n\n-------------------------------\n\tstarting new pass\n-------------------------------\n\n";
 		sets_before.clear();
 		sets_before = sets_after;
 		sets_after.clear();
@@ -72,7 +74,6 @@ cout<<"\n\n-------------------------------\n\tstarting new pass\n---------------
 
 			vector<set<int>> splitted_sets;
 			for(int state : s){						// loop on states
-cout<<"\nworking on state "<<state<<":\n\n     ";
 				bool found_group=false;
 
 				vector<set<int>>::iterator s_next_level=splitted_sets.begin();
@@ -95,10 +96,8 @@ cout<<"\nworking on state "<<state<<":\n\n     ";
 					}
 				}
 				if(found_group){				// add this state to the lucky set
-cout<<"\t--adding to splitted_set .. set after update:\n";
 					s_next_level->insert(state);
 				}else{							// create a set for this poor state
-cout<<"\t--creating new set ...\n";
 					set<int> new_set;			// Baaaaaaaaaaaaaaaad allocation
 					new_set.insert(state);
 					splitted_sets.push_back(new_set);
@@ -112,7 +111,7 @@ cout<<"\t--creating new set ...\n";
 		update_map(&sets_after, &node_set_map);
 	}
 
-	build_DFA(&sets_after, &node_set_map, in, out);
+	build_DFA(&sets_after, node_set_map, in, out);
 }
 
 
